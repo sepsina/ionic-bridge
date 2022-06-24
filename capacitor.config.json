@@ -1,0 +1,7 @@
+
+{
+	"appId": "com.serfa.bridge",
+	"appName": "bridge",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
