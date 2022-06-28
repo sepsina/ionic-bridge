@@ -1,9 +1,6 @@
-import {Injectable} from '@angular/core';
-//import { Storage } from '@ionic/storage-angular';
-import {NativeStorage} from '@ionic-native/native-storage/ngx';
-import {Platform} from '@ionic/angular';
-
-//import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver'
+import { Injectable } from '@angular/core';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Platform } from '@ionic/angular';
 
 //import * as gConst from './gConst';
 import * as gIF from '../gIF';
@@ -18,7 +15,8 @@ export class StorageService {
     nvAttrMap = new Map();
     nvBindsMap = new Map();
 
-    constructor(private nativeStorage: NativeStorage, private platform: Platform) {
+    constructor(private nativeStorage: NativeStorage,
+                private platform: Platform) {
         this.platform.ready().then(() => {
             setTimeout(() => {
                 this.init();
@@ -39,14 +37,14 @@ export class StorageService {
      */
     async readAllKeys() {
         const keys = await this.nativeStorage.keys();
-        if (keys) {
-            for (const key of keys) {
+        if(keys) {
+            for(const key of keys) {
                 const val = await this.nativeStorage.getItem(key);
-                if (val) {
-                    if (key.slice(0, 4) === 'attr') {
+                if(val) {
+                    if(key.slice(0, 4) === 'attr') {
                         this.nvAttrMap.set(key, val);
                     }
-                    if (key.slice(0, 5) === 'binds') {
+                    if(key.slice(0, 5) === 'binds') {
                         this.nvBindsMap.set(key, val);
                     }
                 }
@@ -94,8 +92,11 @@ export class StorageService {
      * brief
      *
      */
-    setAttrNameAndStyle(name: string, style: gIF.ngStyle_t, valCorr: gIF.valCorr_t, keyVal: any): Promise<gIF.storedAttr_t> {
-        return new Promise((resolve, reject) => {
+    setAttrNameAndStyle(name: string,
+                        style: gIF.ngStyle_t,
+                        valCorr: gIF.valCorr_t,
+                        keyVal: any): Promise<gIF.storedAttr_t> {
+        return new Promise((resolve, reject)=>{
             const key: string = keyVal.key;
             const selAttr: gIF.hostedAttr_t = keyVal.value;
             const storedAttr = {} as gIF.storedAttr_t;
@@ -104,14 +105,14 @@ export class StorageService {
             storedAttr.style = style;
             storedAttr.valCorr = valCorr;
             this.nativeStorage.setItem(key, storedAttr).then(
-                () => {
+                ()=>{
                     selAttr.name = name;
                     selAttr.style = style;
                     selAttr.valCorr = valCorr;
                     this.nvAttrMap.set(key, storedAttr);
                     resolve(storedAttr);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
@@ -156,8 +157,9 @@ export class StorageService {
      * brief
      *
      */
-    setAttrPos(pos: gIF.nsPos_t, keyVal: any): Promise<gIF.storedAttr_t> {
-        return new Promise((resolve, reject) => {
+    setAttrPos(pos: gIF.nsPos_t,
+               keyVal: any): Promise<gIF.storedAttr_t> {
+        return new Promise((resolve, reject)=>{
             const key: string = keyVal.key;
             const selAttr: gIF.hostedAttr_t = keyVal.value;
             const storedAttr = {} as gIF.storedAttr_t;
@@ -166,22 +168,15 @@ export class StorageService {
             storedAttr.style = selAttr.style;
             storedAttr.valCorr = selAttr.valCorr;
             this.nativeStorage.setItem(key, storedAttr).then(
-                () => {
+                ()=>{
                     selAttr.pos = pos;
                     this.nvAttrMap.set(key, storedAttr);
                     resolve(storedAttr);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            /*this.storage.set(key, storedAttr).then(()=>{
-                selAttr.pos = pos;
-                this.nvAttrMap.set(key, storedAttr);
-                resolve(storedAttr);
-            }).catch((err)=>{
-                reject(err);
-            });*/
         });
     }
 
@@ -192,19 +187,18 @@ export class StorageService {
      *
      */
     delStoredAttr(attr: gIF.hostedAttr_t) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject)=>{
             const key = this.attrKey(attr);
             this.nativeStorage.remove(key).then(
-                () => {
+                ()=>{
                     this.attrMap.delete(key);
                     this.nvAttrMap.delete(key);
                     resolve(key);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            //await this.storage.remove(key);
         });
     }
 
@@ -215,12 +209,19 @@ export class StorageService {
      *
      */
     attrKey(params: any) {
+        /*
         let key = 'attr-';
         key += ('000' + params.shortAddr.toString(16)).slice(-4).toUpperCase() + ':';
         key += ('0' + params.endPoint.toString(16)).slice(-2).toUpperCase() + ':';
         key += ('000' + params.clusterID.toString(16)).slice(-4).toUpperCase() + ':';
         key += ('000' + params.attrSetID.toString(16)).slice(-4).toUpperCase() + ':';
         key += ('000' + params.attrID.toString(16)).slice(-4).toUpperCase();
+        */
+        let key = `attr-${params.shortAddr.toString(16).padStart(4, '0').toUpperCase()}`;
+        key += `:${params.endPoint.toString(16).padStart(2, '0').toUpperCase()}`;
+        key += `:${params.clusterID.toString(16).padStart(4, '0').toUpperCase()}`;
+        key += `:${params.attrSetID.toString(16).padStart(4, '0').toUpperCase()}`;
+        key += `:${params.attrID.toString(16).padStart(4, '0').toUpperCase()}`;
 
         return key;
     }
@@ -231,31 +232,26 @@ export class StorageService {
      * brief
      *
      */
-    setBindsName(name: string, binds: gIF.hostedBinds_t): Promise<gIF.storedBinds_t> {
-        return new Promise((resolve, reject) => {
+    setBindsName(name: string,
+                binds: gIF.hostedBinds_t): Promise<gIF.storedBinds_t> {
+        return new Promise((resolve, reject)=>{
             const key = this.bindsKey(binds);
             const val: gIF.hostedBinds_t = this.bindsMap.get(key);
-            if (val) {
+            if(val) {
                 const storedBinds = {} as gIF.storedBinds_t;
                 storedBinds.bindsName = name;
                 this.nativeStorage.setItem(key, storedBinds).then(
-                    () => {
+                    ()=>{
                         val.name = name;
                         this.nvBindsMap.set(key, storedBinds);
                         resolve(storedBinds);
                     },
-                    (err) => {
+                    (err)=>{
                         reject(err);
                     }
                 );
-                /*this.storage.set(key, storedBinds).then(()=>{
-                    val.name = name;
-                    this.nvBindsMap.set(key, storedBinds);
-                    resolve(storedBinds);
-                }).catch((err)=>{
-                    reject(err);
-                });*/
-            } else {
+            }
+            else {
                 console.log('NO VALID BINDS');
                 reject(new Error('No valid binds'));
             }
@@ -269,19 +265,18 @@ export class StorageService {
      *
      */
     delStoredBinds(binds: gIF.hostedBinds_t) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject)=>{
             const key = this.bindsKey(binds);
             this.nativeStorage.remove(key).then(
-                () => {
+                ()=>{
                     this.bindsMap.delete(key);
                     this.nvBindsMap.delete(key);
                     resolve(key);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            //await this.storage.remove(key);
         });
     }
 
@@ -292,10 +287,15 @@ export class StorageService {
      *
      */
     bindsKey(binds: gIF.hostedBinds_t) {
+        /*
         let key = 'binds-';
         key += ('000' + binds.srcShortAddr.toString(16)).slice(-4).toUpperCase() + ':';
         key += ('0' + binds.srcEP.toString(16)).slice(-2).toUpperCase() + ':';
         key += ('000' + binds.clusterID.toString(16)).slice(-4).toUpperCase();
+        */
+        let key = `binds-${binds.srcShortAddr.toString(16).padStart(4, '0').toUpperCase()}`;
+        key += `:${binds.srcEP.toString(16).padStart(2, '0').toUpperCase()}`;
+        key += `:${binds.clusterID.toString(16).padStart(4, '0').toUpperCase()}`;
 
         return key;
     }
@@ -307,17 +307,16 @@ export class StorageService {
      *
      */
     setScrolls(scrolls: gIF.scroll_t[]) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject)=>{
             this.nativeStorage.setItem('scrolls', JSON.stringify(scrolls)).then(
-                () => {
+                ()=>{
                     resolve('OK');
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
         });
-        //await this.storage.set('scrolls', JSON.stringify(scrolls));
     }
     /***********************************************************************************************
      * fn          getScrolls
@@ -326,21 +325,15 @@ export class StorageService {
      *
      */
     getScrolls(): Promise<string> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject)=>{
             this.nativeStorage.getItem('scrolls').then(
-                (scrolls) => {
+                (scrolls)=>{
                     resolve(scrolls);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            /*this.storage.get('scrolls').then((scrolls)=>{
-                resolve(scrolls);
-            }).catch((err)=>{
-                console.log('get scrolls err: ' + err.code);
-                reject(err);
-            });*/
         });
     }
 
@@ -351,17 +344,16 @@ export class StorageService {
      *
      */
     setPublicIP(ip: string) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject)=>{
             this.nativeStorage.setItem('public-ip', ip).then(
-                () => {
+                ()=>{
                     resolve('OK');
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
         });
-        //await this.storage.set('public-ip', ip);
     }
     /***********************************************************************************************
      * fn          getPublicIP
@@ -372,19 +364,13 @@ export class StorageService {
     getPublicIP(): Promise<string> {
         return new Promise((resolve, reject) => {
             this.nativeStorage.getItem('public-ip').then(
-                (ip) => {
+                (ip)=>{
                     resolve(ip);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            /*this.storage.get('public-ip').then((ip)=>{
-                resolve(ip);
-            }).catch((err)=>{
-                console.log('get scrolls err: ' + err.code);
-                reject(err);
-            });*/
         });
     }
 
@@ -397,15 +383,14 @@ export class StorageService {
     setFreeDNS(dns: gIF.dns_t) {
         return new Promise((resolve, reject) => {
             this.nativeStorage.setItem('free-dns', dns).then(
-                () => {
+                ()=>{
                     resolve('OK');
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
         });
-        //await this.storage.set('free-dns', dns);
     }
     /***********************************************************************************************
      * fn          getFreeDNS
@@ -416,19 +401,13 @@ export class StorageService {
     getFreeDNS(): Promise<gIF.dns_t> {
         return new Promise((resolve, reject) => {
             this.nativeStorage.getItem('free-dns').then(
-                (dns) => {
+                (dns)=>{
                     resolve(dns);
                 },
-                (err) => {
+                (err)=>{
                     reject(err);
                 }
             );
-            /*this.storage.get('free-dns').then((dns: gIF.dns_t)=>{
-                resolve(dns);
-            }).catch((err)=>{
-                console.log('get scrolls err: ' + err.code);
-                reject(err);
-            });*/
         });
     }
 
@@ -437,7 +416,7 @@ export class StorageService {
      *
      * brief
      *
-     */
+     *
     private extToHex(extAddr: number) {
         const ab = new ArrayBuffer(8);
         const dv = new DataView(ab);
@@ -448,4 +427,5 @@ export class StorageService {
         }
         return extHex.join(':');
     }
+    */
 }

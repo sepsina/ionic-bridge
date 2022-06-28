@@ -1,15 +1,14 @@
-import {Injectable} from '@angular/core';
-import {SerialLinkService} from './serial-link.service';
-import {EventsService} from './events.service';
-import {StorageService} from './storage.service';
-//import {sprintf} from 'sprintf-js';
-import {Platform} from '@ionic/angular';
+import { Injectable } from '@angular/core';
+import { SerialLinkService } from './serial-link.service';
+import { EventsService } from './events.service';
+import { StorageService } from './storage.service';
+import { Platform } from '@ionic/angular';
 
 import * as gConst from '../gConst';
 import * as gIF from '../gIF';
 
-import {UDP} from '@frontall/capacitor-udp';
-import {decode, encode} from 'base64-arraybuffer';
+import { UDP } from '@frontall/capacitor-udp';
+import { decode, encode } from 'base64-arraybuffer';
 
 const LOC_PORT = 22802;
 
@@ -17,17 +16,16 @@ const LOC_PORT = 22802;
     providedIn: 'root',
 })
 export class UdpService {
+
     udpSocket: number;
     msgBuf = new ArrayBuffer(1024);
-    msg: DataView = new DataView(this.msgBuf);
+    msg = new DataView(this.msgBuf);
 
-    constructor(
-        private serial: SerialLinkService,
-        private events: EventsService,
-        private storage: StorageService,
-        private platform: Platform
-    ) {
-        platform.ready().then(() => {
+    constructor(private serial: SerialLinkService,
+                private events: EventsService,
+                private storage: StorageService,
+                private platform: Platform) {
+        this.platform.ready().then(() => {
             this.initSocket();
         });
     }
@@ -39,7 +37,9 @@ export class UdpService {
      *
      */
     async initSocket() {
+
         this.udpSocket = -1;
+
         try {
             //await UDP.closeAllSockets();
             const info = await UDP.create();
@@ -47,22 +47,23 @@ export class UdpService {
             await UDP.bind({
                 socketId: info.socketId,
                 address: '0.0.0.0',
-                port: LOC_PORT,
+                port: LOC_PORT
             });
             await UDP.setBroadcast({
                 socketId: info.socketId,
-                enabled: true,
+                enabled: true
             });
             await UDP.setPaused({
                 socketId: info.socketId,
-                paused: false,
+                paused: false
             });
-            UDP.addListener('receive', (msg) => {
-                if (msg.socketId === this.udpSocket) {
+            UDP.addListener('receive', (msg)=>{
+                if(msg.socketId === this.udpSocket) {
                     this.udpOnMsg(msg);
                 }
             });
-        } catch (err) {
+        }
+        catch(err) {
             console.log(err);
         }
     }
@@ -76,9 +77,10 @@ export class UdpService {
     public closeSocket() {
         try {
             UDP.close({
-                socketId: this.udpSocket,
+                socketId: this.udpSocket
             });
-        } catch (err) {
+        }
+        catch(err) {
             console.log(err);
         }
     }
@@ -90,15 +92,15 @@ export class UdpService {
      *
      */
     public udpOnMsg(msg) {
-        const dataView = new DataView(decode(msg.buffer));
+        const cmdView = new DataView(decode(msg.buffer));
         let msgIdx = 0;
-        let pktIdx = 0;
-        const pktFunc = dataView.getUint16(pktIdx, gConst.LE);
-        pktIdx += 2;
+        let cmdIdx = 0;
+        const pktFunc = cmdView.getUint16(cmdIdx, gConst.LE);
+        cmdIdx += 2;
         switch (pktFunc) {
             case gConst.BRIDGE_ID_REQ: {
                 const rnd = Math.floor(Math.random() * 100) + 50;
-                setTimeout(() => {
+                setTimeout(()=>{
                     this.msg.setUint16(0, gConst.BRIDGE_ID_RSP, gConst.LE);
                     try {
                         UDP.send({
@@ -107,7 +109,8 @@ export class UdpService {
                             port: msg.remotePort,
                             buffer: encode(this.msgBuf.slice(0, 2)),
                         });
-                    } catch (err) {
+                    }
+                    catch(err) {
                         console.log(err);
                     }
                 }, rnd);
@@ -116,8 +119,8 @@ export class UdpService {
             case gConst.ON_OFF_ACTUATORS: {
                 this.msg.setUint16(msgIdx, pktFunc, gConst.LE);
                 msgIdx += 2;
-                const startIdx = dataView.getUint16(pktIdx, gConst.LE);
-                pktIdx += 2;
+                const startIdx = cmdView.getUint16(cmdIdx, gConst.LE);
+                cmdIdx += 2;
                 this.msg.setUint16(msgIdx, startIdx, gConst.LE);
                 msgIdx += 2;
                 const numIdx = msgIdx;
@@ -128,9 +131,9 @@ export class UdpService {
                 this.msg.setUint8(msgIdx, 1);
                 msgIdx++;
                 let valIdx = 0;
-                for (const attrSet of this.serial.setMap.values()) {
-                    if (attrSet.clusterID === gConst.CLUSTER_ID_GEN_ON_OFF) {
-                        if (valIdx >= startIdx) {
+                for(const attrSet of this.serial.setMap.values()) {
+                    if(attrSet.clusterID === gConst.CLUSTER_ID_GEN_ON_OFF) {
+                        if(valIdx >= startIdx) {
                             numVals++;
                             this.msg.setUint32(msgIdx, attrSet.partNum, gConst.LE);
                             msgIdx += 4;
@@ -144,19 +147,19 @@ export class UdpService {
                             msgIdx++;
                             this.msg.setUint8(msgIdx, attrSet.setVals.name.length);
                             msgIdx++;
-                            for (let i = 0; i < attrSet.setVals.name.length; i++) {
+                            for(let i = 0; i < attrSet.setVals.name.length; i++) {
                                 this.msg.setUint8(msgIdx, attrSet.setVals.name.charCodeAt(i));
                                 msgIdx++;
                             }
                         }
                         valIdx++;
                     }
-                    if (msgIdx > 500) {
+                    if(msgIdx > 500) {
                         this.msg.setUint8(doneIdx, 0);
                         break; // exit for-loop
                     }
                 }
-                if (numVals) {
+                if(numVals) {
                     this.msg.setUint16(numIdx, numVals, gConst.LE);
                 }
                 try {
@@ -166,7 +169,8 @@ export class UdpService {
                         port: msg.remotePort,
                         buffer: encode(this.msgBuf.slice(0, msgIdx)),
                     });
-                } catch (err) {
+                }
+                catch(err) {
                     console.log(err);
                 }
                 break;
@@ -174,8 +178,8 @@ export class UdpService {
             case gConst.T_SENSORS: {
                 this.msg.setUint16(msgIdx, pktFunc, gConst.LE);
                 msgIdx += 2;
-                const startIdx = dataView.getUint16(pktIdx, gConst.LE);
-                pktIdx += 2;
+                const startIdx = cmdView.getUint16(cmdIdx, gConst.LE);
+                cmdIdx += 2;
                 this.msg.setUint16(msgIdx, startIdx, gConst.LE);
                 msgIdx += 2;
                 const numIdx = msgIdx;
@@ -186,9 +190,9 @@ export class UdpService {
                 this.msg.setUint8(msgIdx, 1);
                 msgIdx++;
                 let valIdx = 0;
-                for (const attrSet of this.serial.setMap.values()) {
-                    if (attrSet.clusterID === gConst.CLUSTER_ID_MS_TEMPERATURE_MEASUREMENT) {
-                        if (valIdx >= startIdx) {
+                for(const attrSet of this.serial.setMap.values()) {
+                    if(attrSet.clusterID === gConst.CLUSTER_ID_MS_TEMPERATURE_MEASUREMENT) {
+                        if(valIdx >= startIdx) {
                             numVals++;
                             this.msg.setUint32(msgIdx, attrSet.partNum, gConst.LE);
                             msgIdx += 4;
@@ -202,19 +206,19 @@ export class UdpService {
                             msgIdx += 2;
                             this.msg.setUint8(msgIdx, attrSet.setVals.name.length);
                             msgIdx++;
-                            for (let i = 0; i < attrSet.setVals.name.length; i++) {
+                            for(let i = 0; i < attrSet.setVals.name.length; i++) {
                                 this.msg.setUint8(msgIdx, attrSet.setVals.name.charCodeAt(i));
                                 msgIdx++;
                             }
                         }
                         valIdx++;
                     }
-                    if (msgIdx > 500) {
+                    if(msgIdx > 500) {
                         this.msg.setUint8(doneIdx, 0);
                         break; // exit for-loop
                     }
                 }
-                if (numVals) {
+                if(numVals) {
                     this.msg.setUint16(numIdx, numVals, gConst.LE);
                 }
                 try {
@@ -224,7 +228,8 @@ export class UdpService {
                         port: msg.remotePort,
                         buffer: encode(this.msgBuf.slice(0, msgIdx)),
                     });
-                } catch (err) {
+                }
+                catch(err) {
                     console.log(err);
                 }
                 break;
@@ -232,8 +237,8 @@ export class UdpService {
             case gConst.RH_SENSORS: {
                 this.msg.setUint16(msgIdx, pktFunc, gConst.LE);
                 msgIdx += 2;
-                const startIdx = dataView.getUint16(pktIdx, gConst.LE);
-                pktIdx += 2;
+                const startIdx = cmdView.getUint16(cmdIdx, gConst.LE);
+                cmdIdx += 2;
                 this.msg.setUint16(msgIdx, startIdx, gConst.LE);
                 msgIdx += 2;
                 const numIdx = msgIdx;
@@ -244,9 +249,9 @@ export class UdpService {
                 this.msg.setUint8(msgIdx, 1);
                 msgIdx++;
                 let valIdx = 0;
-                for (const attrSet of this.serial.setMap.values()) {
-                    if (attrSet.clusterID === gConst.CLUSTER_ID_MS_RH_MEASUREMENT) {
-                        if (valIdx >= startIdx) {
+                for(const attrSet of this.serial.setMap.values()) {
+                    if(attrSet.clusterID === gConst.CLUSTER_ID_MS_RH_MEASUREMENT) {
+                        if(valIdx >= startIdx) {
                             numVals++;
                             this.msg.setUint32(msgIdx, attrSet.partNum, gConst.LE);
                             msgIdx += 4;
@@ -258,19 +263,19 @@ export class UdpService {
                             msgIdx += 2;
                             this.msg.setUint8(msgIdx, attrSet.setVals.name.length);
                             msgIdx++;
-                            for (let i = 0; i < attrSet.setVals.name.length; i++) {
+                            for(let i = 0; i < attrSet.setVals.name.length; i++) {
                                 this.msg.setUint8(msgIdx, attrSet.setVals.name.charCodeAt(i));
                                 msgIdx++;
                             }
                         }
                         valIdx++;
                     }
-                    if (msgIdx > 500) {
+                    if(msgIdx > 500) {
                         this.msg.setUint8(doneIdx, 0);
                         break; // exit for-loop
                     }
                 }
-                if (numVals) {
+                if(numVals) {
                     this.msg.setUint16(numIdx, numVals, gConst.LE);
                 }
                 try {
@@ -280,7 +285,8 @@ export class UdpService {
                         port: msg.remotePort,
                         buffer: encode(this.msgBuf.slice(0, msgIdx)),
                     });
-                } catch (err) {
+                }
+                catch(err) {
                     console.log(err);
                 }
                 break;
@@ -289,20 +295,16 @@ export class UdpService {
                 const udpZclCmd = {} as gIF.udpZclReq_t;
                 udpZclCmd.ip = msg.remoteAddress;
                 udpZclCmd.port = msg.remotePort;
-                udpZclCmd.shortAddr = dataView.getUint16(pktIdx, gConst.LE);
-                pktIdx += 2;
-                udpZclCmd.endPoint = dataView.getUint8(pktIdx);
-                pktIdx++;
-                udpZclCmd.clusterID = dataView.getUint16(pktIdx, gConst.LE);
-                pktIdx += 2;
-                udpZclCmd.hasRsp = dataView.getUint8(pktIdx);
-                pktIdx++;
-                udpZclCmd.cmdLen = dataView.getUint8(pktIdx);
-                pktIdx++;
+                udpZclCmd.shortAddr = cmdView.getUint16(cmdIdx, gConst.LE);
+                cmdIdx += 2;
+                udpZclCmd.endPoint = cmdView.getUint8(cmdIdx++);
+                udpZclCmd.clusterID = cmdView.getUint16(cmdIdx, gConst.LE);
+                cmdIdx += 2;
+                udpZclCmd.hasRsp = cmdView.getUint8(cmdIdx++);
+                udpZclCmd.cmdLen = cmdView.getUint8(cmdIdx++);
                 udpZclCmd.cmd = [];
-                for (let i = 0; i < udpZclCmd.cmdLen; i++) {
-                    udpZclCmd.cmd[i] = dataView.getUint8(pktIdx);
-                    pktIdx++;
+                for(let i = 0; i < udpZclCmd.cmdLen; i++) {
+                    udpZclCmd.cmd[i] = cmdView.getUint8(cmdIdx++);
                 }
                 this.serial.udpZclCmd(JSON.stringify(udpZclCmd));
                 break;

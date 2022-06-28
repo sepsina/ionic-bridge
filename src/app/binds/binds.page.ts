@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @angular-eslint/component-class-suffix */
-import {Component, Inject, OnInit, AfterViewInit, ElementRef, NgZone, ViewChild} from '@angular/core';
-import {SerialLinkService} from '../services/serial-link.service';
-import {StorageService} from '../services/storage.service';
-import {UtilsService} from '../services/utils.service';
-import {Validators, FormControl} from '@angular/forms';
-import {MatSelectionListChange} from '@angular/material/list';
-import {MatSelectChange} from '@angular/material/select';
-import {MatTooltip} from '@angular/material/tooltip';
-//import {File} from '@ionic-native/file/ngx';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { Component, Inject, OnInit, AfterViewInit, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { SerialLinkService } from '../services/serial-link.service';
+import { StorageService } from '../services/storage.service';
+import { UtilsService } from '../services/utils.service';
+import { Validators, FormControl } from '@angular/forms';
+import { MatSelectionListChange} from '@angular/material/list';
+import { MatSelectChange } from '@angular/material/select';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import * as gConst from '../gConst';
 import * as gIF from '../gIF';
@@ -21,6 +20,7 @@ import * as gIF from '../gIF';
     styleUrls: ['./binds.page.scss'],
 })
 export class EditBinds implements OnInit, AfterViewInit {
+
     @ViewChild('free_binds') free_binds: ElementRef;
 
     allBindSrc: gIF.hostedBinds_t[] = [];
@@ -44,15 +44,13 @@ export class EditBinds implements OnInit, AfterViewInit {
 
     nameFormCtrl = new FormControl('', [Validators.required]);
 
-    constructor(
-        private dialogRef: MatDialogRef<EditBinds>,
-        @Inject(MAT_DIALOG_DATA) public dlgData: any,
-        private serial: SerialLinkService,
-        private storage: StorageService,
-        //private file: File,
-        private utils: UtilsService,
-        private ngZone: NgZone
-    ) {
+    constructor(private dialogRef: MatDialogRef<EditBinds>,
+                @Inject(MAT_DIALOG_DATA) public dlgData: any,
+                private serial: SerialLinkService,
+                private storage: StorageService,
+                //private file: File,
+                private utils: UtilsService,
+                private ngZone: NgZone) {
         // ---
     }
 
@@ -83,13 +81,13 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     refresh() {
+
         this.allBindSrc = JSON.parse(JSON.stringify(Array.from(this.storage.bindsMap.values())));
         const attribs: gIF.hostedAttr_t[] = JSON.parse(JSON.stringify(Array.from(this.storage.attrMap.values())));
 
         this.allBindDst = [];
-        for (const attr of attribs) {
-            //attribs.forEach((attr) => {
-            if (attr.clusterServer) {
+        for(const attr of attribs) {
+            if(attr.clusterServer) {
                 const bind = {} as gIF.bind_t;
                 bind.valid = true;
                 bind.extAddr = attr.extAddr;
@@ -101,7 +99,7 @@ export class EditBinds implements OnInit, AfterViewInit {
                 this.allBindDst.push(bind);
             }
         }
-        if (this.allBindSrc.length) {
+        if(this.allBindSrc.length) {
             this.bindSrc = this.allBindSrc[0];
             this.nameFormCtrl.setValue(this.bindSrc.name);
             this.ngZone.run(() => {
@@ -109,7 +107,8 @@ export class EditBinds implements OnInit, AfterViewInit {
             });
             this.setBindSourceDesc(this.bindSrc);
             this.noSrcBinds = false;
-        } else {
+        }
+        else {
             this.noSrcBinds = true;
             this.emptyFlag = true;
         }
@@ -123,28 +122,30 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public setBinds(bindSrc: gIF.hostedBinds_t) {
+
         this.usedBindDst = [];
         this.freeBindDst = [];
-        for (const bindDst of this.allBindDst) {
-            if (bindDst.clusterID === bindSrc.clusterID) {
+        for(const bindDst of this.allBindDst) {
+            if(bindDst.clusterID === bindSrc.clusterID) {
                 this.freeBindDst.push(bindDst);
             }
         }
-        for (const bindDst of bindSrc.bindsDst) {
-            const idx = this.freeBindDst.findIndex((bind) => {
-                if (bind.extAddr === bindDst.dstExtAddr) {
-                    if (bind.endPoint === bindDst.dstEP) {
-                        if (bind.clusterID === bindSrc.clusterID) {
+        for(const bindDst of bindSrc.bindsDst) {
+            const idx = this.freeBindDst.findIndex((bind)=>{
+                if(bind.extAddr === bindDst.dstExtAddr) {
+                    if(bind.endPoint === bindDst.dstEP) {
+                        if(bind.clusterID === bindSrc.clusterID) {
                             return true;
                         }
                     }
                 }
                 return false;
             });
-            if (idx > -1) {
+            if(idx > -1) {
                 this.usedBindDst.push(this.freeBindDst[idx]);
                 this.freeBindDst.splice(idx, 1);
-            } else {
+            }
+            else {
                 const bind = {} as gIF.bind_t;
                 bind.valid = false;
                 bind.name = 'unknown';
@@ -152,34 +153,34 @@ export class EditBinds implements OnInit, AfterViewInit {
             }
         }
         let numBindSrc = 0;
-        for (const bind of this.allBindSrc) {
-            if (bind.extAddr === bindSrc.extAddr) {
+        for(const bind of this.allBindSrc) {
+            if(bind.extAddr === bindSrc.extAddr) {
                 numBindSrc += bind.bindsDst.length;
             }
         }
         this.emptyFlag = true;
         let numEmpty = 0;
-        if (numBindSrc < bindSrc.maxBinds) {
+        if(numBindSrc < bindSrc.maxBinds) {
             numEmpty = bindSrc.maxBinds - numBindSrc;
             this.emptyFlag = false;
         }
         let numUsed = 0;
-        if (this.usedBindDst.length < numBindSrc) {
+        if(this.usedBindDst.length < numBindSrc) {
             numUsed = numBindSrc - this.usedBindDst.length;
         }
-        for (let i = 0; i < numEmpty; i++) {
+        for(let i = 0; i < numEmpty; i++) {
             const bind = {} as gIF.bind_t;
             bind.valid = false;
             bind.name = '--- empty ---';
             this.usedBindDst.push(bind);
         }
-        for (let i = 0; i < numUsed; i++) {
+        for(let i = 0; i < numUsed; i++) {
             const bind = {} as gIF.bind_t;
             bind.valid = false;
             bind.name = '--- used ---';
             this.usedBindDst.push(bind);
         }
-        for (let i = this.freeBindDst.length; i < gConst.MAX_SRC_BINDS; i++) {
+        for(let i = this.freeBindDst.length; i < gConst.MAX_SRC_BINDS; i++) {
             const bind = {} as gIF.bind_t;
             bind.valid = false;
             bind.name = '--- empty ---';
@@ -194,11 +195,12 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public bindSrcSelected(event: MatSelectChange) {
+
         this.nameFormCtrl.setValue(this.bindSrc.name);
         this.setBindSourceDesc(this.bindSrc);
 
         this.deSelAll();
-        this.ngZone.run(() => {
+        this.ngZone.run(()=>{
             this.setBinds(this.bindSrc);
         });
     }
@@ -210,9 +212,10 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public setBindSourceDesc(srcBind: gIF.hostedBinds_t) {
+
         this.bindSourceDesc = [];
         const partDesc: gIF.part_t = this.dlgData.partMap.get(srcBind.partNum);
-        if (partDesc) {
+        if(partDesc) {
             let descVal = {} as gIF.descVal_t;
             descVal.key = 'S/N:';
             descVal.value = this.utils.extToHex(srcBind.extAddr);
@@ -225,10 +228,6 @@ export class EditBinds implements OnInit, AfterViewInit {
             descVal.key = 'label:';
             descVal.value = partDesc.part;
             this.bindSourceDesc.push(descVal);
-            /*descVal = {} as gIF.descVal_t;
-            descVal.key = 'url:';
-            descVal.value = partDesc.url;
-            this.bindSourceDesc.push(descVal);*/
         }
     }
 
@@ -239,8 +238,8 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public usedBindDstChanged(event: MatSelectionListChange) {
-        this.selUsedBindDst = event.option.value;
 
+        this.selUsedBindDst = event.option.value;
         this.setUsedBindDstDesc(this.selUsedBindDst);
     }
 
@@ -251,9 +250,10 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public setUsedBindDstDesc(dst: gIF.bind_t) {
+
         this.usedBindDstDesc = [];
         const partDesc: gIF.part_t = this.dlgData.partMap.get(dst.partNum);
-        if (partDesc) {
+        if(partDesc) {
             let descVal = {} as gIF.descVal_t;
             descVal.key = 'S/N:';
             descVal.value = this.utils.extToHex(dst.extAddr);
@@ -266,10 +266,6 @@ export class EditBinds implements OnInit, AfterViewInit {
             descVal.key = 'label:';
             descVal.value = partDesc.part;
             this.usedBindDstDesc.push(descVal);
-            /*descVal = {} as gIF.descVal_t;
-            descVal.key = 'url:';
-            descVal.value = partDesc.url;
-            this.usedBindDstDesc.push(descVal);*/
         }
     }
 
@@ -280,8 +276,8 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public freeBindDstChanged(event: MatSelectionListChange) {
-        this.selFreeBindDst = event.option.value;
 
+        this.selFreeBindDst = event.option.value;
         this.setFreeBindDstDesc(this.selFreeBindDst);
     }
 
@@ -292,9 +288,10 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public setFreeBindDstDesc(target: gIF.bind_t) {
+
         this.freeBindDstDesc = [];
         const partDesc: gIF.part_t = this.dlgData.partMap.get(target.partNum);
-        if (partDesc) {
+        if(partDesc) {
             let descVal = {} as gIF.descVal_t;
             descVal.key = 'S/N:';
             descVal.value = this.utils.extToHex(target.extAddr);
@@ -307,10 +304,6 @@ export class EditBinds implements OnInit, AfterViewInit {
             descVal.key = 'label:';
             descVal.value = partDesc.part;
             this.freeBindDstDesc.push(descVal);
-            /*descVal = {} as gIF.descVal_t;
-            descVal.key = 'url:';
-            descVal.value = partDesc.url;
-            this.freeBindDstDesc.push(descVal);*/
         }
     }
 
@@ -321,19 +314,20 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public addBindDst() {
+
         let numValid = 0;
-        this.usedBindDst.forEach((bindDst) => {
-            if (bindDst.valid) {
+        for(const bindDst of this.usedBindDst) {
+            if(bindDst.valid) {
                 numValid++;
             }
-        });
-        if (numValid < gConst.MAX_DST_BINDS) {
-            if (this.selFreeBindDst) {
+        }
+        if(numValid < gConst.MAX_DST_BINDS) {
+            if(this.selFreeBindDst) {
                 const bindDst = {} as gIF.bindDst_t;
                 bindDst.dstExtAddr = this.selFreeBindDst.extAddr;
                 bindDst.dstEP = this.selFreeBindDst.endPoint;
                 this.bindSrc.bindsDst.push(bindDst);
-                this.ngZone.run(() => {
+                this.ngZone.run(()=>{
                     this.setBinds(this.bindSrc);
                 });
 
@@ -349,10 +343,11 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     public removeBindDst() {
-        if (this.selUsedBindDst) {
-            const idx = this.bindSrc.bindsDst.findIndex((bindDst) => {
-                if (this.selUsedBindDst.extAddr === bindDst.dstExtAddr) {
-                    if (this.selUsedBindDst.endPoint === bindDst.dstEP) {
+
+        if(this.selUsedBindDst) {
+            const idx = this.bindSrc.bindsDst.findIndex((bindDst)=>{
+                if(this.selUsedBindDst.extAddr === bindDst.dstExtAddr) {
+                    if(this.selUsedBindDst.endPoint === bindDst.dstEP) {
                         return true;
                     }
                 }
@@ -362,7 +357,7 @@ export class EditBinds implements OnInit, AfterViewInit {
                 this.bindSrc.bindsDst.splice(idx, 1);
             }
 
-            this.ngZone.run(() => {
+            this.ngZone.run(()=>{
                 this.setBinds(this.bindSrc);
             });
 
@@ -371,36 +366,17 @@ export class EditBinds implements OnInit, AfterViewInit {
     }
 
     /***********************************************************************************************
-     * fn          setFreeBindDstToolTip
-     *
-     * brief
-     *
-     *
-    public setBindToolTip(bind: gIF.bind_t){
-
-        let idx = this.serial.partDesc.findIndex((desc)=>{
-            return(desc.partNum == bind.partNum);
-        });
-        if(idx > -1){
-            bind.tooltip = '';
-            bind.tooltip += sprintf('S/N: %s \n', this.extToHex(bind.extAddr));
-            bind.tooltip += sprintf('node-name: %s \n', this.serial.partDesc[idx].devName);
-            bind.tooltip += sprintf('label: %s \n', this.serial.partDesc[idx].part);
-            bind.tooltip += sprintf('url: %s \n', this.serial.partDesc[idx].url);
-        }
-    }
-    */
-    /***********************************************************************************************
      * fn          showTooltip
      *
      * brief
      *
      */
     showTooltip(tt: MatTooltip, bind: gIF.bind_t) {
+
         let ttMsg = '';
         ttMsg += `S/N: ${this.utils.extToHex(bind.extAddr)} \n`;
         const partDesc: gIF.part_t = this.dlgData.partMap.get(bind.partNum);
-        if (partDesc) {
+        if(partDesc) {
             ttMsg += `node-name: ${partDesc.devName} \n`;
             ttMsg += `part: ${partDesc.part} \n`;
             ttMsg += `url: ${partDesc.url} \n`;
@@ -439,6 +415,7 @@ export class EditBinds implements OnInit, AfterViewInit {
      *
      */
     private deSelAll() {
+
         this.selUsedBindDst = null;
         this.usedBindDstListSelected = [];
         this.usedBindDstDesc = [];

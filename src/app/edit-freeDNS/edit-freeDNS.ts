@@ -2,16 +2,13 @@
 /* eslint-disable @angular-eslint/component-class-suffix */
 /* eslint-disable @angular-eslint/component-selector */
 /* eslint-disable @typescript-eslint/naming-convention */
-import {Component, Inject, OnInit, AfterViewInit} from '@angular/core';
-import {SerialLinkService} from '../services/serial-link.service';
-//import { nsService } from '../ns.service';
-import {StorageService} from '../services/storage.service';
-//import { NativeStorage } from "@ionic-native/native-storage/ngx";
-import {EventsService} from '../services/events.service';
-import {Validators, FormControl} from '@angular/forms';
-//import { sprintf } from 'sprintf-js';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {HTTP} from '@ionic-native/http/ngx';
+import { Component, Inject, OnInit, AfterViewInit } from '@angular/core';
+import { SerialLinkService } from '../services/serial-link.service';
+import { StorageService } from '../services/storage.service';
+import { EventsService } from '../services/events.service';
+import { Validators, FormControl } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { HTTP } from '@ionic-native/http/ngx';
 
 import * as gConst from '../gConst';
 import * as gIF from '../gIF';
@@ -27,6 +24,7 @@ interface httpRsp_t {
     styleUrls: ['./edit-freeDNS.css'],
 })
 export class EditFreeDNS implements OnInit, AfterViewInit {
+
     dns = {} as gIF.dns_t;
     httpRsp = '';
 
@@ -37,15 +35,12 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
     domainCtrl = new FormControl('', Validators.required);
     tokenCtrl = new FormControl('', Validators.required);
 
-    constructor(
-        public dialogRef: MatDialogRef<EditFreeDNS>,
-        @Inject(MAT_DIALOG_DATA) public dlgData: any,
-        public serialLink: SerialLinkService,
-        public events: EventsService,
-        public storage: StorageService,
-        //public nativeStorage: NativeStorage,
-        public http: HTTP
-    ) {
+    constructor(public dialogRef: MatDialogRef<EditFreeDNS>,
+                @Inject(MAT_DIALOG_DATA) public dlgData: any,
+                public serialLink: SerialLinkService,
+                public events: EventsService,
+                public storage: StorageService,
+                public http: HTTP) {
         // ---
     }
 
@@ -75,18 +70,16 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     ngAfterViewInit(): void {
-        this.storage
-            .getFreeDNS()
-            .then((freeDns: gIF.dns_t) => {
-                if (freeDns) {
+        this.storage.getFreeDNS().then((freeDns: gIF.dns_t)=>{
+                if(freeDns) {
                     this.dns = freeDns;
                     this.userCtrl.setValue(this.dns.user);
                     this.pswCtrl.setValue(this.dns.psw);
                     this.domainCtrl.setValue(this.dns.domain);
                 }
             })
-            .catch((err) => {
-                console.log('get freeDNS err: ' + JSON.stringify(err));
+            .catch((err)=>{
+                console.log(`get freeDNS err: ${err}`);
             });
     }
     /***********************************************************************************************
@@ -120,7 +113,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     userErr() {
-        if (this.userCtrl.hasError('required')) {
+        if(this.userCtrl.hasError('required')) {
             return 'You must enter a value';
         }
     }
@@ -131,7 +124,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     pswErr() {
-        if (this.pswCtrl.hasError('required')) {
+        if(this.pswCtrl.hasError('required')) {
             return 'You must enter a value';
         }
     }
@@ -142,7 +135,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     domainErr() {
-        if (this.domainCtrl.hasError('required')) {
+        if(this.domainCtrl.hasError('required')) {
             return 'You must enter a value';
         }
     }
@@ -190,7 +183,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
         this.logs.push(log);
         const header = this.http.getBasicAuthHeader(this.dns.user, this.dns.psw);
         const freeDNS = `https://freedns.afraid.org/nic/update?hostname=${this.dns.domain}`;
-        this.http.get(freeDNS, {}, header).then((rsp) => {
+        this.http.get(freeDNS, {}, header).then((rsp)=>{
             this.logs = [];
             log = {
                 key: '- status: ',
@@ -205,7 +198,6 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
             for (const [key, value] of Object.entries(rsp.headers)) {
                 log = {
                     key: `- ${key}: `,
-                    //key: sprintf('- %s: ', key),
                     value: value,
                 };
                 this.logs.push(log);

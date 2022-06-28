@@ -1,7 +1,7 @@
 /* eslint-disable @angular-eslint/directive-class-suffix */
 /* eslint-disable @angular-eslint/directive-selector */
 /* eslint-disable @typescript-eslint/member-ordering */
-import { Directive, ElementRef, HostListener, AfterViewInit} from '@angular/core';
+import { Directive, ElementRef, HostListener, AfterViewInit } from '@angular/core';
 //import { EventsService } from '../events.service';
 import { SerialLinkService } from '../services/serial-link.service';
 //import * as gConst from '../gConst';
@@ -11,6 +11,7 @@ import { SerialLinkService } from '../services/serial-link.service';
     selector: '[highlightSel]'
 })
 export class HighlightSel implements AfterViewInit{
+
     bgColor: string;
     color: string;
 

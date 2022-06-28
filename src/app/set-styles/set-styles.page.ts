@@ -1,11 +1,10 @@
 /* eslint-disable @angular-eslint/component-class-suffix */
-import {Component, OnInit, Inject, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
-import {SerialLinkService} from '../services/serial-link.service';
-import {StorageService} from '../services/storage.service';
-import {Validators, FormGroup, FormControl, AbstractControl} from '@angular/forms';
-import {sprintf} from 'sprintf-js';
-import {EventsService} from '../services/events.service';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { Component, OnInit, Inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { SerialLinkService } from '../services/serial-link.service';
+import { StorageService } from '../services/storage.service';
+import { Validators, FormGroup, FormControl, AbstractControl } from '@angular/forms';
+import { EventsService } from '../services/events.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import * as gConst from '../gConst';
 import * as gIF from '../gIF';
@@ -16,6 +15,7 @@ import * as gIF from '../gIF';
     styleUrls: ['./set-styles.page.scss'],
 })
 export class SetStyles implements OnInit, AfterViewInit {
+
     @ViewChild('testView') testView: ElementRef;
 
     maxFontSize = 50;
@@ -36,30 +36,28 @@ export class SetStyles implements OnInit, AfterViewInit {
     unitSel = [];
     unitsCtrl = new FormControl('', Validators.required);
 
-    constructor(
-        public dialogRef: MatDialogRef<SetStyles>,
-        @Inject(MAT_DIALOG_DATA) public keyVal: any,
-        public events: EventsService,
-        public serialLink: SerialLinkService,
-        public storage: StorageService
-    ) {
+    constructor(public dialogRef: MatDialogRef<SetStyles>,
+                @Inject(MAT_DIALOG_DATA) public keyVal: any,
+                public events: EventsService,
+                public serialLink: SerialLinkService,
+                public storage: StorageService) {
         this.selAttr = this.keyVal.value;
     }
 
     ngAfterViewInit(): void {
         this.testView.nativeElement.style.color = this.selAttr.style.color;
         this.testView.nativeElement.style.backgroundColor = this.selAttr.style.bgColor;
-        this.testView.nativeElement.style.fontSize = sprintf('%dpx', this.selAttr.style.fontSize);
+        this.testView.nativeElement.style.fontSize = `${this.selAttr.style.fontSize}px`;
 
         this.testView.nativeElement.style.borderColor = this.selAttr.style.borderColor;
-        this.testView.nativeElement.style.borderWidth = sprintf('%dpx', this.selAttr.style.borderWidth);
+        this.testView.nativeElement.style.borderWidth = `${this.selAttr.style.borderWidth}px`;
         this.testView.nativeElement.style.borderStyle = this.selAttr.style.borderStyle;
-        this.testView.nativeElement.style.borderRadius = sprintf('%dpx', this.selAttr.style.borderRadius);
+        this.testView.nativeElement.style.borderRadius = `${this.selAttr.style.borderRadius}px`;
 
-        this.testView.nativeElement.style.paddingTop = sprintf('%dpx', this.selAttr.style.paddingTop);
-        this.testView.nativeElement.style.paddingRight = sprintf('%dpx', this.selAttr.style.paddingRight);
-        this.testView.nativeElement.style.paddingBottom = sprintf('%dpx', this.selAttr.style.paddingBottom);
-        this.testView.nativeElement.style.paddingLeft = sprintf('%dpx', this.selAttr.style.paddingLeft);
+        this.testView.nativeElement.style.paddingTop = `${this.selAttr.style.paddingTop}px`;
+        this.testView.nativeElement.style.paddingRight = `${this.selAttr.style.paddingRight}px`;
+        this.testView.nativeElement.style.paddingBottom = `${this.selAttr.style.paddingBottom}px`;
+        this.testView.nativeElement.style.paddingLeft = `${this.selAttr.style.paddingLeft}px`;
     }
 
     ngOnInit() {
@@ -101,7 +99,7 @@ export class SetStyles implements OnInit, AfterViewInit {
                 this.unitSel.push({name: 'degC', unit: gConst.DEG_C});
                 this.unitSel.push({name: 'degF', unit: gConst.DEG_F});
                 this.unitsCtrl.setValue(this.unitSel[0]);
-                if (this.selAttr.valCorr.units === gConst.DEG_F) {
+                if(this.selAttr.valCorr.units === gConst.DEG_F) {
                     this.unitsCtrl.setValue(this.unitSel[1]);
                 }
                 break;
@@ -111,7 +109,7 @@ export class SetStyles implements OnInit, AfterViewInit {
                 this.unitSel.push({name: 'mBar', unit: gConst.M_BAR});
                 this.unitSel.push({name: 'inHg', unit: gConst.IN_HG});
                 this.unitsCtrl.setValue(this.unitSel[0]);
-                if (this.selAttr.valCorr.units === gConst.IN_HG) {
+                if(this.selAttr.valCorr.units === gConst.IN_HG) {
                     this.unitsCtrl.setValue(this.unitSel[1]);
                 }
                 break;
@@ -135,7 +133,10 @@ export class SetStyles implements OnInit, AfterViewInit {
         this.style.paddingBottom = this.formGroup.get('paddingBottom').value;
         this.style.paddingLeft = this.formGroup.get('paddingLeft').value;
 
-        await this.storage.setAttrNameAndStyle(this.name, this.style, this.valCorr, this.keyVal);
+        await this.storage.setAttrNameAndStyle(this.name,
+                                               this.style,
+                                               this.valCorr,
+                                               this.keyVal);
         this.dialogRef.close();
     }
 
@@ -144,31 +145,31 @@ export class SetStyles implements OnInit, AfterViewInit {
     }
 
     nameErr() {
-        if (this.formGroup.get('name').hasError('required')) {
+        if(this.formGroup.get('name').hasError('required')) {
             return 'You must enter a value';
         }
     }
     offsetErr() {
-        if (this.formGroup.get('offset').hasError('required')) {
+        if(this.formGroup.get('offset').hasError('required')) {
             return 'You must enter a value';
         }
     }
     colorErr() {
-        if (this.formGroup.get('color').hasError('required')) {
+        if(this.formGroup.get('color').hasError('required')) {
             return 'You must enter a value';
         }
     }
     bgColorErr() {
-        if (this.formGroup.get('bgColor').hasError('required')) {
+        if(this.formGroup.get('bgColor').hasError('required')) {
             return 'You must enter a value';
         }
     }
     fontSizeErr() {
-        if (this.formGroup.get('fontSize').hasError('required')) {
+        if(this.formGroup.get('fontSize').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('fontSize').hasError('max')) {
-            return sprintf('font size must be less than %d', this.maxFontSize);
+        if(this.formGroup.get('fontSize').hasError('max')) {
+            return `font size must be less than ${this.maxFontSize}`;
         }
     }
     borderColorErr() {
@@ -181,7 +182,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('borderWidth').hasError('max')) {
-            return sprintf('border width must be less than %d', this.maxBorderWidth);
+            return `border width must be less than ${this.maxBorderWidth}`;
         }
     }
     borderStyleErr() {
@@ -194,7 +195,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('borderRadius').hasError('max')) {
-            return sprintf('border radius must be less than %d', this.maxBorderRadius);
+            return `border radius must be less than ${this.maxBorderRadius}`;
         }
     }
     paddingTopErr() {
@@ -202,7 +203,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('paddingTop').hasError('max')) {
-            return sprintf('padding top must be less than %d', this.maxPaddingTop);
+            return `padding top must be less than ${this.maxPaddingTop}`;
         }
     }
     paddingRightErr() {
@@ -210,7 +211,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('paddingRight').hasError('max')) {
-            return sprintf('padding right must be less than %d', this.maxPaddingRight);
+            return `padding right must be less than ${this.maxPaddingRight}`;
         }
     }
     paddingBottomErr() {
@@ -218,7 +219,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('paddingBottom').hasError('max')) {
-            return sprintf('padding bottom must be less than %d', this.maxPaddingBottom);
+            return `padding bottom must be less than ${this.maxPaddingBottom}`;
         }
     }
     paddingLeftErr() {
@@ -226,7 +227,7 @@ export class SetStyles implements OnInit, AfterViewInit {
             return 'You must enter a value';
         }
         if (this.formGroup.get('paddingLeft').hasError('max')) {
-            return sprintf('padding left must be less than %d', this.maxPaddingLeft);
+            return `padding left must be less than ${this.maxPaddingLeft}`;
         }
     }
 
@@ -237,31 +238,31 @@ export class SetStyles implements OnInit, AfterViewInit {
         this.testView.nativeElement.style.backgroundColor = this.formGroup.get('bgColor').value;
     }
     fontSizeChange() {
-        this.testView.nativeElement.style.fontSize = sprintf('%dpx', this.formGroup.get('fontSize').value);
+        this.testView.nativeElement.style.fontSize = `${this.formGroup.get('fontSize').value}px`;
     }
     borderColorChange() {
         this.testView.nativeElement.style.borderColor = this.formGroup.get('borderColor').value;
     }
     borderWidthChange() {
-        this.testView.nativeElement.style.borderWidth = sprintf('%dpx', this.formGroup.get('borderWidth').value);
+        this.testView.nativeElement.style.borderWidth = `${this.formGroup.get('borderWidth').value}px`;
     }
     borderStyleChange() {
         this.testView.nativeElement.style.borderStyle = this.formGroup.get('borderStyle').value;
     }
     borderRadiusChange() {
-        this.testView.nativeElement.style.borderRadius = sprintf('%dpx', this.formGroup.get('borderRadius').value);
+        this.testView.nativeElement.style.borderRadius = `${this.formGroup.get('borderRadius').value}px`;
     }
     paddingTopChange() {
-        this.testView.nativeElement.style.paddingTop = sprintf('%dpx', this.formGroup.get('paddingTop').value);
+        this.testView.nativeElement.style.paddingTop = `${this.formGroup.get('paddingTop').value}px`;
     }
     paddingRightChange() {
-        this.testView.nativeElement.style.paddingRight = sprintf('%dpx', this.formGroup.get('paddingRight').value);
+        this.testView.nativeElement.style.paddingRight = `${this.formGroup.get('paddingRight').value}px`;
     }
     paddingBottomChange() {
-        this.testView.nativeElement.style.paddingBottom = sprintf('%dpx', this.formGroup.get('paddingBottom').value);
+        this.testView.nativeElement.style.paddingBottom = `${this.formGroup.get('paddingBottom').value}px`;
     }
     paddingLeftChange() {
-        this.testView.nativeElement.style.paddingLeft = sprintf('%dpx', this.formGroup.get('paddingLeft').value);
+        this.testView.nativeElement.style.paddingLeft = `${this.formGroup.get('paddingLeft').value}px`;
     }
 
     /***********************************************************************************************
