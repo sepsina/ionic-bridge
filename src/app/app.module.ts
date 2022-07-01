@@ -23,14 +23,17 @@ import { Serial } from '@ionic-native/serial/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { HTTP } from '@ionic-native/http/ngx';
 
-//import { Drivers } from '@ionic/storage'
-//import { IonicStorageModule } from '@ionic/storage-angular';
-//import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver'
-
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @NgModule({
-    declarations: [AppComponent, SetStyles, EditScrolls, EditFreeDNS, EditBinds, HighlightSel],
+    declarations: [
+        AppComponent,
+        SetStyles,
+        EditScrolls,
+        EditFreeDNS,
+        EditBinds,
+        HighlightSel
+    ],
     entryComponents: [],
     imports: [
         CommonModule,
@@ -43,11 +46,13 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
         AngularMaterialModule,
         AngularDraggableModule,
         NgScrollbarModule,
-        //IonicStorageModule.forRoot({
-        //    driverOrder: [CordovaSQLiteDriver._driver, Drivers.IndexedDB, Drivers.LocalStorage]
-        //})
     ],
-    providers: [Serial, File, HTTP, NativeStorage],
+    providers: [
+        Serial,
+        File,
+        HTTP,
+        NativeStorage
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

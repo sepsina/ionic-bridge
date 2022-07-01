@@ -1,4 +1,3 @@
-/* eslint-disable @angular-eslint/component-class-suffix */
 import { Component, OnInit, Inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { SerialLinkService } from '../services/serial-link.service';
 import { StorageService } from '../services/storage.service';
@@ -78,22 +77,94 @@ export class SetStyles implements OnInit, AfterViewInit {
         this.style.paddingLeft = this.selAttr.style.paddingLeft;
 
         this.formGroup = new FormGroup({
-            name: new FormControl(this.name, [Validators.required]),
-            offset: new FormControl(this.valCorr.offset, [Validators.required]),
-            color: new FormControl(this.style.color, [Validators.required]),
-            bgColor: new FormControl(this.style.bgColor, [Validators.required]),
-            fontSize: new FormControl(this.style.fontSize, [Validators.required, Validators.max(this.maxFontSize)]),
-            borderColor: new FormControl(this.style.borderColor, [Validators.required]),
-            borderWidth: new FormControl(this.style.borderWidth, [Validators.required, Validators.max(this.maxBorderWidth)]),
-            borderStyle: new FormControl(this.style.borderStyle, [Validators.required]),
-            borderRadius: new FormControl(this.style.borderRadius, [Validators.required, Validators.max(this.maxBorderRadius)]),
-            paddingTop: new FormControl(this.style.paddingTop, [Validators.required, Validators.max(this.maxPaddingTop)]),
-            paddingRight: new FormControl(this.style.paddingRight, [Validators.required, Validators.max(this.maxPaddingRight)]),
-            paddingBottom: new FormControl(this.style.paddingBottom, [Validators.required, Validators.max(this.maxPaddingBottom)]),
-            paddingLeft: new FormControl(this.style.paddingLeft, [Validators.required, Validators.max(this.maxPaddingLeft)]),
+            name: new FormControl(
+                this.name,
+                [
+                    Validators.required
+                ]
+            ),
+            offset: new FormControl(
+                this.valCorr.offset,
+                [
+                    Validators.required
+                ]
+            ),
+            color: new FormControl(
+                this.style.color,
+                [
+                    Validators.required
+                ]
+            ),
+            bgColor: new FormControl(
+                this.style.bgColor,
+                [
+                    Validators.required
+                ]
+            ),
+            fontSize: new FormControl(
+                this.style.fontSize,
+                [
+                    Validators.required,
+                    Validators.max(this.maxFontSize)
+                ]
+            ),
+            borderColor: new FormControl(
+                this.style.borderColor,
+                [
+                    Validators.required
+                ]
+            ),
+            borderWidth: new FormControl(
+                this.style.borderWidth,
+                [
+                    Validators.required,
+                    Validators.max(this.maxBorderWidth)
+                ]
+            ),
+            borderStyle: new FormControl(
+                this.style.borderStyle,
+                [
+                    Validators.required
+                ]
+            ),
+            borderRadius: new FormControl(
+                this.style.borderRadius,
+                [
+                    Validators.required,
+                    Validators.max(this.maxBorderRadius)
+                ]
+            ),
+            paddingTop: new FormControl(
+                this.style.paddingTop,
+                [
+                    Validators.required,
+                    Validators.max(this.maxPaddingTop)
+                ]
+            ),
+            paddingRight: new FormControl(
+                this.style.paddingRight,
+                [
+                    Validators.required,
+                    Validators.max(this.maxPaddingRight)
+                ]
+            ),
+            paddingBottom: new FormControl(
+                this.style.paddingBottom,
+                [
+                    Validators.required,
+                    Validators.max(this.maxPaddingBottom)
+                ]
+            ),
+            paddingLeft: new FormControl(
+                this.style.paddingLeft,
+                [
+                    Validators.required,
+                    Validators.max(this.maxPaddingLeft)
+                ]
+            ),
         });
 
-        switch (this.selAttr.clusterID) {
+        switch(this.selAttr.clusterID) {
             case gConst.CLUSTER_ID_MS_TEMPERATURE_MEASUREMENT: {
                 this.hasUnits = true;
                 this.unitSel.push({name: 'degC', unit: gConst.DEG_C});
@@ -173,96 +244,96 @@ export class SetStyles implements OnInit, AfterViewInit {
         }
     }
     borderColorErr() {
-        if (this.formGroup.get('borderColor').hasError('required')) {
+        if(this.formGroup.get('borderColor').hasError('required')) {
             return 'You must enter a value';
         }
     }
     borderWidthErr() {
-        if (this.formGroup.get('borderWidth').hasError('required')) {
+        if(this.formGroup.get('borderWidth').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('borderWidth').hasError('max')) {
+        if(this.formGroup.get('borderWidth').hasError('max')) {
             return `border width must be less than ${this.maxBorderWidth}`;
         }
     }
     borderStyleErr() {
-        if (this.formGroup.get('borderStyle').hasError('required')) {
+        if(this.formGroup.get('borderStyle').hasError('required')) {
             return 'You must enter a value';
         }
     }
     borderRadiusErr() {
-        if (this.formGroup.get('borderRadius').hasError('required')) {
+        if(this.formGroup.get('borderRadius').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('borderRadius').hasError('max')) {
+        if(this.formGroup.get('borderRadius').hasError('max')) {
             return `border radius must be less than ${this.maxBorderRadius}`;
         }
     }
     paddingTopErr() {
-        if (this.formGroup.get('paddingTop').hasError('required')) {
+        if(this.formGroup.get('paddingTop').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('paddingTop').hasError('max')) {
+        if(this.formGroup.get('paddingTop').hasError('max')) {
             return `padding top must be less than ${this.maxPaddingTop}`;
         }
     }
     paddingRightErr() {
-        if (this.formGroup.get('paddingRight').hasError('required')) {
+        if(this.formGroup.get('paddingRight').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('paddingRight').hasError('max')) {
+        if(this.formGroup.get('paddingRight').hasError('max')) {
             return `padding right must be less than ${this.maxPaddingRight}`;
         }
     }
     paddingBottomErr() {
-        if (this.formGroup.get('paddingBottom').hasError('required')) {
+        if(this.formGroup.get('paddingBottom').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('paddingBottom').hasError('max')) {
+        if(this.formGroup.get('paddingBottom').hasError('max')) {
             return `padding bottom must be less than ${this.maxPaddingBottom}`;
         }
     }
     paddingLeftErr() {
-        if (this.formGroup.get('paddingLeft').hasError('required')) {
+        if(this.formGroup.get('paddingLeft').hasError('required')) {
             return 'You must enter a value';
         }
-        if (this.formGroup.get('paddingLeft').hasError('max')) {
+        if(this.formGroup.get('paddingLeft').hasError('max')) {
             return `padding left must be less than ${this.maxPaddingLeft}`;
         }
     }
 
-    colorChange() {
-        this.testView.nativeElement.style.color = this.formGroup.get('color').value;
+    colorChange(event) {
+        this.testView.nativeElement.style.color = event.target.value;
     }
-    bgColorChange() {
-        this.testView.nativeElement.style.backgroundColor = this.formGroup.get('bgColor').value;
+    bgColorChange(event) {
+        this.testView.nativeElement.style.backgroundColor = event.target.value;
     }
-    fontSizeChange() {
-        this.testView.nativeElement.style.fontSize = `${this.formGroup.get('fontSize').value}px`;
+    fontSizeChange(event) {
+        this.testView.nativeElement.style.fontSize = `${event.target.value}px`;
     }
-    borderColorChange() {
-        this.testView.nativeElement.style.borderColor = this.formGroup.get('borderColor').value;
+    borderColorChange(event) {
+        this.testView.nativeElement.style.borderColor = event.target.value;
     }
-    borderWidthChange() {
-        this.testView.nativeElement.style.borderWidth = `${this.formGroup.get('borderWidth').value}px`;
+    borderWidthChange(event) {
+        this.testView.nativeElement.style.borderWidth = `${event.target.value}px`;
     }
-    borderStyleChange() {
-        this.testView.nativeElement.style.borderStyle = this.formGroup.get('borderStyle').value;
+    borderStyleChange(event) {
+        this.testView.nativeElement.style.borderStyle = event.target.value;
     }
-    borderRadiusChange() {
-        this.testView.nativeElement.style.borderRadius = `${this.formGroup.get('borderRadius').value}px`;
+    borderRadiusChange(event) {
+        this.testView.nativeElement.style.borderRadius = `${event.target.value}px`;
     }
-    paddingTopChange() {
-        this.testView.nativeElement.style.paddingTop = `${this.formGroup.get('paddingTop').value}px`;
+    paddingTopChange(event) {
+        this.testView.nativeElement.style.paddingTop = `${event.target.value}px`;
     }
-    paddingRightChange() {
-        this.testView.nativeElement.style.paddingRight = `${this.formGroup.get('paddingRight').value}px`;
+    paddingRightChange(event) {
+        this.testView.nativeElement.style.paddingRight = `${event.target.value}px`;
     }
-    paddingBottomChange() {
-        this.testView.nativeElement.style.paddingBottom = `${this.formGroup.get('paddingBottom').value}px`;
+    paddingBottomChange(event) {
+        this.testView.nativeElement.style.paddingBottom = `${event.target.value}px`;
     }
-    paddingLeftChange() {
-        this.testView.nativeElement.style.paddingLeft = `${this.formGroup.get('paddingLeft').value}px`;
+    paddingLeftChange(event) {
+        this.testView.nativeElement.style.paddingLeft = `${event.target.value}px`;
     }
 
     /***********************************************************************************************
@@ -273,16 +344,5 @@ export class SetStyles implements OnInit, AfterViewInit {
      */
     unitsChanged(event) {
         //console.log(event);
-    }
-
-    /***********************************************************************************************
-     * fn          convertToFormControl
-     *
-     * brief
-     *
-     */
-    convertToFormControl(absCtrl: AbstractControl | null): FormControl {
-        const ctrl = absCtrl as FormControl;
-        return ctrl;
     }
 }

@@ -14,35 +14,32 @@
                    autocomplete="off"
                    type="text"
                    placeholder="user"
-                   [formControl]="userCtrl"
-                   (ngModelChange)="userChange()">
-            <!--<mat-hint align="end">user</mat-hint>-->
-            <mat-error *ngIf="userCtrl.hasError('required')">{{userErr()}}</mat-error>
+                   [formControl]="userFormCtrl" />
+            <mat-error *ngIf="userFormCtrl.hasError('required')">{{userErr()}}</mat-error>
         </mat-form-field>
         <mat-form-field>
             <input matInput
                    autocomplete="off"
                    type="text"
                    placeholder="password"
-                   [formControl]="pswCtrl"
-                   (ngModelChange)="pswChange()">
-            <!--<mat-hint align="end">freeDNS password</mat-hint>-->
-            <mat-error *ngIf="pswCtrl.hasError('required')">{{pswErr()}}</mat-error>
+                   [formControl]="pswFormCtrl" />
+            <mat-error *ngIf="pswFormCtrl.hasError('required')">{{pswErr()}}</mat-error>
         </mat-form-field>
         <mat-form-field>
             <input matInput
                    autocomplete="off"
                    type="text"
                    placeholder="domain"
-                   [formControl]="domainCtrl"
-                   (ngModelChange)="domainChange()">
-            <!--<mat-hint align="end">freeDNS domain</mat-hint>-->
-            <mat-error *ngIf="domainCtrl.hasError('required')">{{domainErr()}}</mat-error>
+                    [formControl]="domainFormCtrl" />
+            <mat-error *ngIf="domainFormCtrl.hasError('required')">{{domainErr()}}</mat-error>
         </mat-form-field>
     </div>
     <div class="cards-common" id="test-card">
         <div id="test-button">
-            <button mat-stroked-button (click)="test()">Test</button>
+            <button mat-stroked-button
+                    (click)="test()">
+                Test
+            </button>
         </div>
         <div id="http-rsp">
             <div class='rsp-msg' *ngFor="let msg of logs">
@@ -54,15 +51,20 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
 <div class="edit-dns">
     <div>
-        <button mat-stroked-button (click)="close()">Cancel</button>
+        <button mat-stroked-button
+                (click)="close()">
+            Cancel
+        </button>
     </div>
     <div>
-        <button mat-stroked-button (click)="save()">Save</button>
+        <button mat-stroked-button
+                (click)="save()">
+            Save
+        </button>
     </div>
 </div>

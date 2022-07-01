@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @angular-eslint/component-class-suffix */
-import { Component, Inject, OnInit, AfterViewInit, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { SerialLinkService } from '../services/serial-link.service';
 import { StorageService } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
@@ -19,7 +19,7 @@ import * as gIF from '../gIF';
     templateUrl: './binds.page.html',
     styleUrls: ['./binds.page.scss'],
 })
-export class EditBinds implements OnInit, AfterViewInit {
+export class EditBinds implements OnInit {
 
     @ViewChild('free_binds') free_binds: ElementRef;
 
@@ -48,7 +48,6 @@ export class EditBinds implements OnInit, AfterViewInit {
                 @Inject(MAT_DIALOG_DATA) public dlgData: any,
                 private serial: SerialLinkService,
                 private storage: StorageService,
-                //private file: File,
                 private utils: UtilsService,
                 private ngZone: NgZone) {
         // ---
@@ -62,16 +61,6 @@ export class EditBinds implements OnInit, AfterViewInit {
      */
     ngOnInit() {
         this.refresh();
-    }
-
-    /***********************************************************************************************
-     * fn          ngAfterViewInit
-     *
-     * brief
-     *
-     */
-    ngAfterViewInit(): void {
-        // ---
     }
 
     /***********************************************************************************************

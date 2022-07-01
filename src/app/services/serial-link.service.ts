@@ -544,7 +544,7 @@ export class SerialLinkService {
                 nvAttr = this.storage.nvAttrMap.get(key);
                 attrName = '';
                 units = gConst.M_BAR;
-                if (nvAttr) {
+                if(nvAttr) {
                     attrName = nvAttr.attrName;
                     units = nvAttr.valCorr.units;
                     press = this.corrVal(press, nvAttr.valCorr);

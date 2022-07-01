@@ -30,10 +30,10 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
 
     logs: httpRsp_t[] = [];
 
-    userCtrl = new FormControl('', Validators.required);
-    pswCtrl = new FormControl('', Validators.required);
-    domainCtrl = new FormControl('', Validators.required);
-    tokenCtrl = new FormControl('', Validators.required);
+    userFormCtrl = new FormControl('', Validators.required);
+    pswFormCtrl = new FormControl('', Validators.required);
+    domainFormCtrl = new FormControl('', Validators.required);
+    tokenFormCtrl = new FormControl('', Validators.required);
 
     constructor(public dialogRef: MatDialogRef<EditFreeDNS>,
                 @Inject(MAT_DIALOG_DATA) public dlgData: any,
@@ -51,6 +51,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     ngOnInit(): void {
+
         this.dns.user = 'user';
         this.dns.psw = 'psw';
         this.dns.domain = 'domain';
@@ -70,17 +71,18 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     ngAfterViewInit(): void {
+
         this.storage.getFreeDNS().then((freeDns: gIF.dns_t)=>{
-                if(freeDns) {
-                    this.dns = freeDns;
-                    this.userCtrl.setValue(this.dns.user);
-                    this.pswCtrl.setValue(this.dns.psw);
-                    this.domainCtrl.setValue(this.dns.domain);
-                }
-            })
-            .catch((err)=>{
-                console.log(`get freeDNS err: ${err}`);
-            });
+            if(freeDns) {
+                this.dns = freeDns;
+                this.userFormCtrl.setValue(this.dns.user);
+                this.pswFormCtrl.setValue(this.dns.psw);
+                this.domainFormCtrl.setValue(this.dns.domain);
+            }
+        })
+        .catch((err)=>{
+            console.log(`get freeDNS err: ${err}`);
+        });
     }
     /***********************************************************************************************
      * fn          save
@@ -89,9 +91,10 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     save() {
-        this.dns.user = this.userCtrl.value;
-        this.dns.psw = this.pswCtrl.value;
-        this.dns.domain = this.domainCtrl.value;
+
+        this.dns.user = this.userFormCtrl.value;
+        this.dns.psw = this.pswFormCtrl.value;
+        this.dns.domain = this.domainFormCtrl.value;
         this.dns.token = 'not-used';
 
         this.storage.setFreeDNS(this.dns);
@@ -113,7 +116,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     userErr() {
-        if(this.userCtrl.hasError('required')) {
+        if(this.userFormCtrl.hasError('required')) {
             return 'You must enter a value';
         }
     }
@@ -124,7 +127,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     pswErr() {
-        if(this.pswCtrl.hasError('required')) {
+        if(this.pswFormCtrl.hasError('required')) {
             return 'You must enter a value';
         }
     }
@@ -135,37 +138,9 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     domainErr() {
-        if(this.domainCtrl.hasError('required')) {
+        if(this.domainFormCtrl.hasError('required')) {
             return 'You must enter a value';
         }
-    }
-
-    /***********************************************************************************************
-     * fn          userChange
-     *
-     * brief
-     *
-     */
-    userChange() {
-        // ---
-    }
-    /***********************************************************************************************
-     * fn          pswChange
-     *
-     * brief
-     *
-     */
-    pswChange() {
-        // ---
-    }
-    /***********************************************************************************************
-     * fn          domainChange
-     *
-     * brief
-     *
-     */
-    domainChange() {
-        // ---
     }
 
     /***********************************************************************************************
@@ -175,6 +150,7 @@ export class EditFreeDNS implements OnInit, AfterViewInit {
      *
      */
     test() {
+
         let log = {
             key: '- status :',
             value: '...',

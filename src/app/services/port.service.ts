@@ -320,7 +320,7 @@ export class PortService {
                 const msgView = new DataView(msgData.buffer);
                 let msgIdx = 0;
                 const msgSeqNum = msgView.getUint8(msgIdx++);
-                if (msgSeqNum === this.seqNum) {
+                if(msgSeqNum === this.seqNum) {
                     rxBinds.hostShortAddr = this.hostCmdQueue[0].shortAddr;
                     const status = msgView.getUint8(msgIdx++);
                     if(status === gConst.SL_CMD_OK) {

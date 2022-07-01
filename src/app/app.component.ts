@@ -1,30 +1,29 @@
 /* eslint-disable object-shorthand */
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, NgZone} from '@angular/core';
-import {EventsService} from './services/events.service';
-import {SerialLinkService} from './services/serial-link.service';
-import {UdpService} from './services/udp.service';
-import {HttpService} from './services/http.service';
-import {StorageService} from './services/storage.service';
-import {UtilsService} from './services/utils.service';
-import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-//import {sprintf} from 'sprintf-js';
-import {File} from '@ionic-native/file/ngx';
-import {MatTooltip} from '@angular/material/tooltip';
-import {NgScrollbar} from 'ngx-scrollbar';
-import {Platform} from '@ionic/angular';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, NgZone } from '@angular/core';
+import { EventsService } from './services/events.service';
+import { SerialLinkService } from './services/serial-link.service';
+import { UdpService } from './services/udp.service';
+import { HttpService } from './services/http.service';
+import { StorageService } from './services/storage.service';
+import { UtilsService} from './services/utils.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { File } from '@ionic-native/file/ngx';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgScrollbar } from 'ngx-scrollbar';
+import { Platform } from '@ionic/angular';
 
-import {Filesystem, Directory, Encoding} from '@capacitor/filesystem';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 //import { Capacitor } from "@capacitor/core";
 
-import {SetStyles} from './set-styles/set-styles.page';
-import {EditScrolls} from './edit-scrolls/edit-scrolls';
-import {EditFreeDNS} from './edit-freeDNS/edit-freeDNS';
-import {EditBinds} from './binds/binds.page';
+import { SetStyles } from './set-styles/set-styles.page';
+import { EditScrolls } from './edit-scrolls/edit-scrolls';
+import { EditFreeDNS } from './edit-freeDNS/edit-freeDNS';
+import { EditBinds } from './binds/binds.page';
 
 import * as gConst from './gConst';
 import * as gIF from './gIF';
 
-import {LoadingController} from '@ionic/angular';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
     selector: 'app-root',
@@ -32,6 +31,7 @@ import {LoadingController} from '@ionic/angular';
     styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
+
     @ViewChild('containerRef') containerRef: ElementRef;
     @ViewChild(NgScrollbar) scrollbarRef: NgScrollbar;
 
@@ -68,18 +68,14 @@ export class AppComponent implements OnInit, AfterViewInit {
         private http: HttpService,
         public storage: StorageService,
         private loadingController: LoadingController,
-        //private nativeStorage: NativeStorage,
         private matDialog: MatDialog,
         private file: File,
-        //private el: ElementRef,
         private ngZone: NgZone,
         private platform: Platform,
         private utils: UtilsService
     ) {
-        this.platform.ready().then(() => {
-            //console.log('screen width: ' + platform.width());
-            //console.log('screen height: ' + platform.height());
-            setTimeout(() => {
+        this.platform.ready().then(()=>{
+            setTimeout(()=>{
                 this.init();
             }, 100);
         });
@@ -102,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async ngOnInit() {
-        window.onbeforeunload = () => {
+        window.onbeforeunload = ()=>{
             this.udp.closeSocket();
         };
         // ---
@@ -122,7 +118,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
             const imgUrl = `data:image/jpeg;base64,${base64.data}`;
             this.setBkgImg(imgUrl);
-        } catch (err) {
+        }
+        catch (err) {
             console.log('read img err: ' + err.code);
             this.setBkgImg(gConst.DFLT_BKG_IMG);
         }
@@ -134,7 +131,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 encoding: Encoding.UTF8,
             });
             this.partDesc = JSON.parse(parts.data);
-            for (const desc of this.partDesc) {
+            for(const desc of this.partDesc) {
                 const part = {} as gIF.part_t;
                 part.devName = desc.devName;
                 part.part = desc.part;
@@ -142,17 +139,18 @@ export class AppComponent implements OnInit, AfterViewInit {
                 this.partMap.set(desc.partNum, part);
             }
             console.log(JSON.stringify(this.partDesc));
-        } catch (err) {
+        }
+        catch(err) {
             console.log('loadParts: read parts err: ' + err.code);
         }
 
         //this.scrolls = [];
         //const scrolls = await this.ns.getScrolls();
         this.storage.getScrolls().then(
-            (scrolls) => {
+            (scrolls)=>{
                 this.scrolls = JSON.parse(scrolls);
             },
-            (err) => {
+            (err)=>{
                 console.log('get scrolss err: ' + err.code);
             }
         );
@@ -175,7 +173,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             top: (this.scrolls[idx].yPos * this.imgDim.height) / 100,
             duration: this.scrolls[idx].duration,
         };
-        this.scrollbarRef.scrollTo(pos).then(() => {
+        this.scrollbarRef.scrollTo(pos).then(()=>{
             // ---
         });
     }
@@ -187,6 +185,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     getAttrStyle(attr: any) {
+
         const attrStyle = attr.value.style;
         const retStyle = {
             color: attrStyle.color,
@@ -201,7 +200,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             'padding-bottom.px': attrStyle.paddingBottom,
             'padding-left.px': attrStyle.paddingLeft,
         };
-        if (attr.value.isValid === false) {
+        if(attr.value.isValid === false) {
             retStyle.color = 'gray';
             retStyle['background-color'] = 'transparent';
             retStyle['border-color'] = 'gray';
@@ -218,6 +217,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     setBkgImg(imgSrc: string) {
+
         const bkgImg = new Image();
         bkgImg.src = imgSrc;
         bkgImg.onload = () => {
@@ -243,6 +243,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     getAttrPosition(attr: any) {
+
         const attrPos = attr.value.pos;
 
         return {
@@ -258,6 +259,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async onDragEnded(event: any, keyVal: any) {
+
         const pos: gIF.nsPos_t = {
             x: event.x / this.imgDim.width,
             y: event.y / this.imgDim.height,
@@ -274,7 +276,8 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async setStyles(keyVal: any) {
-        setTimeout(() => {
+
+        setTimeout(()=>{
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = keyVal;
             dialogConfig.width = '350px';
@@ -283,7 +286,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.panelClass = 'set-styles-container';
 
             const dlgRef = this.matDialog.open(SetStyles, dialogConfig);
-            dlgRef.afterOpened().subscribe(() => {
+            dlgRef.afterOpened().subscribe(()=>{
                 this.dismissLoading();
             });
         }, 10);
@@ -298,7 +301,8 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async onEditScrollsClick(scrollRef) {
-        setTimeout(() => {
+
+        setTimeout(()=>{
             const dlgData = {
                 scrolls: JSON.parse(JSON.stringify(this.scrolls)),
                 scrollRef: scrollRef,
@@ -313,11 +317,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const dlgRef = this.matDialog.open(EditScrolls, dialogConfig);
 
-            dlgRef.afterOpened().subscribe(() => {
+            dlgRef.afterOpened().subscribe(()=>{
                 this.dismissLoading();
             });
-            dlgRef.afterClosed().subscribe((data) => {
-                if (data) {
+            dlgRef.afterClosed().subscribe((data)=>{
+                if(data) {
                     this.scrolls = data;
                     this.storage.setScrolls(this.scrolls);
                 }
@@ -334,7 +338,8 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async setDNS() {
-        setTimeout(() => {
+
+        setTimeout(()=>{
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = '';
             dialogConfig.width = '350px';
@@ -343,7 +348,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.panelClass = 'set-dns-container';
 
             const dlgRef = this.matDialog.open(EditFreeDNS, dialogConfig);
-            dlgRef.afterOpened().subscribe(() => {
+            dlgRef.afterOpened().subscribe(()=>{
                 this.dismissLoading();
             });
         }, 10);
@@ -358,7 +363,8 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     async editBinds() {
-        setTimeout(() => {
+
+        setTimeout(()=>{
             const dlgData = {
                 partMap: this.partMap,
             };
@@ -371,7 +377,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const dlgRef = this.matDialog.open(EditBinds, dialogConfig);
 
-            dlgRef.afterOpened().subscribe(() => {
+            dlgRef.afterOpened().subscribe(()=>{
                 this.dismissLoading();
             });
         }, 10);
@@ -388,17 +394,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     showTooltip(tt: MatTooltip, attr: gIF.hostedAttr_t) {
         let ttMsg = '';
         ttMsg += `attr-name: ${attr.name} \n`;
-        //ttMsg += sprintf('attr-name: %s \n', attr.name);
         ttMsg += `S/N: ${this.utils.extToHex(attr.extAddr)} \n`;
-        //ttMsg += sprintf('S/N: %s \n', this.utils.extToHex(attr.extAddr));
         const partDesc: gIF.part_t = this.partMap.get(attr.partNum);
-        if (partDesc) {
+        if(partDesc) {
             ttMsg += `node-name: ${partDesc.devName} \n`;
-            //ttMsg += sprintf('node-name: %s \n', partDesc.devName);
             ttMsg += `part: ${partDesc.part} \n`;
-            //ttMsg += sprintf('part: %s \n', partDesc.part);
             ttMsg += `url: ${partDesc.url} \n`;
-            //ttMsg += sprintf('url: %s \n', partDesc.url);
         }
         tt.message = ttMsg;
         tt.showDelay = 500;
@@ -424,7 +425,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     dismissLoading() {
         this.loading.dismiss().then(
-            () => {
+            ()=>{
                 this.loadingController
                     .create({
                         message: '... wait',
@@ -432,15 +433,15 @@ export class AppComponent implements OnInit, AfterViewInit {
                         mode: 'md',
                     })
                     .then(
-                        (loading) => {
+                        (loading)=>{
                             this.loading = loading;
                         },
-                        (err) => {
+                        (err)=>{
                             console.log(err);
                         }
                     );
             },
-            (err) => {
+            (err)=>{
                 console.error(err);
             }
         );
