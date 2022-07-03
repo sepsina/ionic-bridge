@@ -8,13 +8,15 @@
                 </button>
             </div>
         </div>
-        <button id="edit-scrolls-button" mat-button onclick="this.blur()" (click)="onEditScrollsClick(scrollable)">
+        <button id="edit-scrolls-button"
+                mat-button onclick="this.blur()"
+                (click)="onEditScrollsClick(scrollRef)">
             <mat-icon>edit</mat-icon>
             edit
         </button>
     </div>
 
-    <ng-scrollbar id="scroll-frame" #scrollable>
+    <perfect-scrollbar id="scroll-frame" #scrollRef>
         <div class="container" #containerRef id="containerID">
             <div *ngFor="let attr of storage.attrMap | keyvalue"
                  class="attr"
@@ -51,7 +53,7 @@
                 </div>
             </div>
         </div>
-    </ng-scrollbar>
+    </perfect-scrollbar>
 
     <div class="footer">
         <button id="edit-dns-button" mat-button onclick="this.blur()" (click)="setDNS()">

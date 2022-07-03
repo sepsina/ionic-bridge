@@ -23,6 +23,7 @@ import { EditBinds } from './binds/binds.page';
 import * as gConst from './gConst';
 import * as gIF from './gIF';
 
+import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 import { LoadingController } from '@ionic/angular';
 
 @Component({
@@ -33,7 +34,7 @@ import { LoadingController } from '@ionic/angular';
 export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild('containerRef') containerRef: ElementRef;
-    @ViewChild(NgScrollbar) scrollbarRef: NgScrollbar;
+    @ViewChild('scrollRef') scrollRef?: PerfectScrollbarComponent;
 
     bkgImgWidth: number;
     bkgImgHeight: number;
@@ -169,13 +170,12 @@ export class AppComponent implements OnInit, AfterViewInit {
      *
      */
     onScroll(idx: number) {
-        const pos = {
-            top: (this.scrolls[idx].yPos * this.imgDim.height) / 100,
-            duration: this.scrolls[idx].duration,
-        };
-        this.scrollbarRef.scrollTo(pos).then(()=>{
-            // ---
-        });
+
+        const x = 0;
+        const y = (this.scrolls[idx].yPos * this.imgDim.height) / 100;
+        const speed = this.scrolls[idx].duration;
+
+        this.scrollRef.directiveRef.scrollTo(x, y, speed);
     }
 
     /***********************************************************************************************
@@ -305,12 +305,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         setTimeout(()=>{
             const dlgData = {
                 scrolls: JSON.parse(JSON.stringify(this.scrolls)),
-                scrollRef: scrollRef,
+                scrollRef: scrollRef.directiveRef,
                 imgDim: this.imgDim,
             };
             const dialogConfig = new MatDialogConfig();
             dialogConfig.data = dlgData;
-            dialogConfig.width = '250px';
+            dialogConfig.width = '300px';
             dialogConfig.autoFocus = false;
             dialogConfig.disableClose = true;
             dialogConfig.panelClass = 'edit-scrolls-container';

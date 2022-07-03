@@ -17,7 +17,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AngularMaterialModule } from './angular-material/angular-material.module';
 import { AngularDraggableModule } from 'angular2-draggable';
-import { NgScrollbarModule } from 'ngx-scrollbar';
+//import { NgScrollbarModule } from 'ngx-scrollbar';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+    suppressScrollX: true
+};
 
 import { Serial } from '@ionic-native/serial/ngx';
 import { File } from '@ionic-native/file/ngx';
@@ -45,13 +52,15 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
         BrowserAnimationsModule,
         AngularMaterialModule,
         AngularDraggableModule,
-        NgScrollbarModule,
+        //NgScrollbarModule,
+        PerfectScrollbarModule
     ],
     providers: [
         Serial,
         File,
         HTTP,
-        NativeStorage
+        NativeStorage,
+        { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG }
     ],
     bootstrap: [AppComponent],
 })

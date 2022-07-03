@@ -174,7 +174,7 @@ export class EditScrolls implements OnInit, AfterViewInit {
         if(pos > this.maxPos){
             return;
         }
-        this.dlgData.scrollRef.scrollTo({top: (pos * this.dlgData.imgDim.height) / 100});
+        this.dlgData.scrollRef.scrollTo(0, pos * this.dlgData.imgDim.height / 100, 0);
         const scroll = this.scrollFormCtrl.value;
         if(scroll){
             scroll.yPos = pos;
