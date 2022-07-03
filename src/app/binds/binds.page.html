@@ -50,11 +50,11 @@
                 </div>
             </div>
             <div class="used-binds-list">
-                <mat-selection-list [multiple]="false"
-                                    [(ngModel)]="usedBindDstListSelected"
+                <mat-selection-list #used_binds
+                                    [multiple]="false"
                                     (selectionChange)="usedBindDstChanged($event)">
-                    <mat-list-option class="binds-name"
-                                     *ngFor="let bindDst of usedBindDst"
+                    <mat-list-option *ngFor="let bindDst of usedBindDst"
+                                     class="binds-name"
                                      [value]="bindDst"
                                      [disabled]="!bindDst.valid"
                                      matTooltip
@@ -96,12 +96,11 @@
                 Available Destinations
             </div>
             <div class="free-binds-list">
-                <mat-selection-list id="free_binds"
+                <mat-selection-list #free_binds
                                     [multiple]="false"
-                                    [(ngModel)]="freeBindDstListSelected"
                                     (selectionChange)="freeBindDstChanged($event)">
-                    <mat-list-option class="binds-name"
-                                     *ngFor="let bindDst of freeBindDst"
+                    <mat-list-option *ngFor="let bindDst of freeBindDst"
+                                     class="binds-name"
                                      [value]="bindDst"
                                      [disabled]="!bindDst.valid"
                                      matTooltip
