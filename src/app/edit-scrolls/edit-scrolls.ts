@@ -1,142 +1,235 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
-/* eslint-disable @angular-eslint/component-class-suffix */
-import { Component, Inject, OnInit, AfterViewInit, ViewChild, NgZone } from '@angular/core';
-import { SerialLinkService } from '../services/serial-link.service';
+import {Component, Inject, OnInit, AfterViewInit, NgZone, OnDestroy, ApplicationRef } from '@angular/core';
 import { EventsService } from '../services/events.service';
 import { Validators, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import * as gIF from '../gIF';
+import * as gIF from '../gIF'
+
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-edit-scrolls',
     templateUrl: './edit-scrolls.html',
-    styleUrls: ['./edit-scrolls.css'],
+    styleUrls: ['./edit-scrolls.css']
 })
-export class EditScrolls implements OnInit, AfterViewInit {
-
-    @ViewChild('selList') selList;
+export class EditScrolls implements OnInit, AfterViewInit, OnDestroy {
 
     minPos = 0;
     maxPos = 100;
-    maxDuration = 2000;
+    maxSpeed = 2000;
 
-    scrollFormCtrl = new FormControl('', Validators.required);
+    scrollFormCtrl: FormControl;
+    nameFormCtrl: FormControl;
+    yPosFormCtrl: FormControl;
+    speedFormCtrl: FormControl;
+    subscription = new Subscription;
 
     scrolls: gIF.scroll_t[] = [];
-    newIdx = 0;
+    newIdx: number = 0;
 
-    nameFormCtrl = new FormControl('', Validators.required);
-    yPosFormCtrl = new FormControl(0, [Validators.required, Validators.max(this.maxPos)]);
-    durationFormCtrl = new FormControl(0, [Validators.required, Validators.max(this.maxDuration)]);
 
-    constructor(public dialogRef: MatDialogRef<EditScrolls>,
+    constructor(private dialogRef: MatDialogRef<EditScrolls>,
                 @Inject(MAT_DIALOG_DATA) public dlgData: any,
-                public serialLink: SerialLinkService,
-                public events: EventsService,
-                public ngZone: NgZone) {
+                private events: EventsService,
+                private ngZone: NgZone,
+                private appRef: ApplicationRef) {
         // ---
     }
 
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
+    }
+
     /***********************************************************************************************
-     * fn          ngOnInit
+     * @fn          ngOnInit
      *
-     * brief
+     * @brief
      *
      */
     ngOnInit(): void {
+
         for(let i = 0; i < this.dlgData.scrolls.length; i++){
-            const scroll = {} as gIF.scroll_t;
+            let scroll = {} as gIF.scroll_t;
             scroll.name = this.dlgData.scrolls[i].name;
             scroll.yPos = this.dlgData.scrolls[i].yPos;
-            scroll.duration = this.dlgData.scrolls[i].duration;
+            scroll.speed = this.dlgData.scrolls[i].speed;
             this.scrolls.push(scroll);
         }
+        this.scrollFormCtrl = new FormControl(
+            '',
+            [
+                Validators.required
+            ]
+        );
+        const scrollSubscription = this.scrollFormCtrl.valueChanges.subscribe((scroll: gIF.scroll_t)=>{
+            if(scroll){
+                this.nameFormCtrl.setValue(scroll.name);
+                this.yPosFormCtrl.setValue(scroll.yPos);
+                this.speedFormCtrl.setValue(scroll.speed);
+                this.yPosSet(scroll.yPos);
+            }
+        });
+        this.subscription.add(scrollSubscription);
+
+        this.nameFormCtrl = new FormControl(
+            '',
+            [
+                Validators.required
+            ]
+        );
+        const nameSubscription = this.nameFormCtrl.valueChanges.subscribe((name)=>{
+            this.nameFormCtrl.markAsTouched();
+            (<gIF.scroll_t>this.scrollFormCtrl.value).name = name;
+        });
+        this.subscription.add(nameSubscription);
+
+        this.yPosFormCtrl = new FormControl(
+            0,
+            [
+                Validators.required,
+                Validators.min(0),
+                Validators.max(this.maxPos)
+            ]
+        );
+        const yPosSubscription = this.yPosFormCtrl.valueChanges.subscribe((pos)=>{
+            this.yPosFormCtrl.markAsTouched();
+            (<gIF.scroll_t>this.scrollFormCtrl.value).yPos = pos;
+            if(pos) {
+                if(pos >= 0) {
+                    if(pos <= this.maxPos) {
+                        this.yPosSet(pos);
+                    }
+                }
+            }
+        });
+        this.subscription.add(yPosSubscription);
+
+        this.speedFormCtrl = new FormControl(
+            0,
+            [
+                Validators.required,
+                Validators.min(0),
+                Validators.max(this.maxSpeed)
+            ]
+        );
+        const speedSubscription = this.speedFormCtrl.valueChanges.subscribe((speed)=>{
+            this.speedFormCtrl.markAsTouched();
+            (<gIF.scroll_t>this.scrollFormCtrl.value).speed = speed;
+        });
+        this.subscription.add(yPosSubscription);
     }
     /***********************************************************************************************
-     * fn          ngAfterViewInit
+     * @fn          ngAfterViewInit
      *
-     * brief
+     * @brief
      *
      */
     ngAfterViewInit(): void {
-        setTimeout(()=>{
+
+        setTimeout(() => {
             const scroll = this.scrolls[0];
             if(scroll) {
                 this.ngZone.run(()=>{
                     this.scrollFormCtrl.setValue(scroll);
                     this.nameFormCtrl.setValue(scroll.name);
                     this.yPosFormCtrl.setValue(scroll.yPos);
-                    this.durationFormCtrl.setValue(scroll.duration);
+                    this.speedFormCtrl.setValue(scroll.speed);
                     this.yPosSet(scroll.yPos);
                 });
             }
         }, 0);
     }
     /***********************************************************************************************
-     * fn          save
+     * @fn          save
      *
-     * brief
+     * @brief
      *
      */
     save() {
-        this.dialogRef.close(this.scrolls);
+
+        let validScrolls = [];
+
+        for(const scroll of this.scrolls){
+            if(scroll.name){
+                if(scroll.yPos) {
+                    if(scroll.yPos >= 0){
+                        if(scroll.yPos <= this.maxPos){
+                            if(scroll.speed){
+                                if(scroll.speed >= 0){
+                                    if(scroll.speed <= this.maxSpeed){
+                                        validScrolls.push(scroll);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        this.dialogRef.close(validScrolls);
     }
     /***********************************************************************************************
-     * fn          close
+     * @fn          close
      *
-     * brief
+     * @brief
      *
      */
     close() {
         this.dialogRef.close();
     }
     /***********************************************************************************************
-     * fn          nameErr
+     * @fn          nameErr
      *
-     * brief
+     * @brief
      *
      */
     nameErr() {
-        if(this.nameFormCtrl.hasError('required')) {
+        if(this.nameFormCtrl.hasError('required')){
             return 'You must enter a value';
         }
     }
     /***********************************************************************************************
-     * fn          posErr
+     * @fn          posErr
      *
-     * brief
+     * @brief
      *
      */
     posErr() {
-        if(this.yPosFormCtrl.hasError('required')) {
+        if(this.yPosFormCtrl.hasError('required')){
             return 'You must enter a value';
         }
-        if(this.yPosFormCtrl.hasError('max')) {
-            return `position must be less than ${this.maxPos} %`;
+        if(this.yPosFormCtrl.hasError('min')){
+            return `position must be >= 0`;
+        }
+        if(this.yPosFormCtrl.hasError('max')){
+            return `position must be <= ${this.maxPos} %`;
         }
     }
     /***********************************************************************************************
-     * fn          durationErr
+     * @fn          speedErr
      *
-     * brief
+     * @brief
      *
      */
-    durationErr() {
-        if(this.durationFormCtrl.hasError('required')) {
+    speedErr() {
+        if(this.speedFormCtrl.hasError('required')){
             return 'You must enter a value';
         }
-        if(this.durationFormCtrl.hasError('max')) {
-            return `duration must be less than ${this.maxDuration}`;
+        if(this.speedFormCtrl.hasError('min')){
+            return 'speed must be >= 0';
+        }
+        if(this.speedFormCtrl.hasError('max')){
+            return `speed must be <= ${this.maxSpeed}`;
         }
     }
     /***********************************************************************************************
-     * fn          nameChange
+     * @fn          nameChange
      *
-     * brief
+     * @brief
      *
      */
     nameChange(event) {
-        const name = event.target.value;
+
+        let name = event.target.value;
         const scroll = this.scrollFormCtrl.value;
         if(name){
             if(scroll){
@@ -144,18 +237,16 @@ export class EditScrolls implements OnInit, AfterViewInit {
             }
         }
     }
-
     /***********************************************************************************************
-     * fn          yPosChange
+     * @fn          yPosChange
      *
-     * brief
+     * @brief
      *
      */
     yPosChange(event) {
-
-        const pos = event.target.value;
-
-        this.yPosSet(pos);
+        console.log(event.target.value);
+        //let pos = event.target.value;
+        this.yPosSet(event.target.value);
     }
 
     /***********************************************************************************************
@@ -168,86 +259,76 @@ export class EditScrolls implements OnInit, AfterViewInit {
 
         if(pos < 0){
             pos = 0;
-            this.yPosFormCtrl.setValue(0);
+            //this.yPosFormCtrl.setValue(0);
         }
-
         if(pos > this.maxPos){
             return;
         }
-        this.dlgData.scrollRef.scrollTo(0, pos * this.dlgData.imgDim.height / 100, 0);
+        this.dlgData.scrollRef.scrollTo(0, pos * this.dlgData.imgDim.height / 100, 100);
         const scroll = this.scrollFormCtrl.value;
         if(scroll){
             scroll.yPos = pos;
         }
     }
-
     /***********************************************************************************************
-     * fn          durationChange
+     * @fn          speedChange
      *
-     * brief
+     * @brief
      *
      */
-    durationChange(event) {
+    speedChange(event) {
 
-        let duration = event.target.value;
+        let speed = event.target.value;
 
-        if(duration < 0){
-            duration = 0;
+        if(speed < 0){
+            speed = 0;
         }
-
-        if(duration > this.maxDuration){
+        if(speed > this.maxSpeed){
             return;
         }
         const scroll = this.scrollFormCtrl.value;
         if(scroll){
-            scroll.duration = duration;
+            scroll.speed = speed;
         }
     }
     /***********************************************************************************************
-     * fn          addScroll
+     * @fn          addScroll
      *
-     * brief
+     * @brief
      *
      */
-    addScroll() {
+    addScroll(){
 
-        const scroll = {} as gIF.scroll_t;
-
-        scroll.name = `new_${this.newIdx}`;
+        let scroll = {} as gIF.scroll_t;
+        scroll.name = `new_${this.newIdx++}`;
         this.newIdx++;
         scroll.yPos = 0;
-        scroll.duration = 200;
+        scroll.speed = 200;
 
         this.scrolls.push(scroll);
         this.scrollFormCtrl.setValue(scroll);
     }
     /***********************************************************************************************
-     * fn          delScroll
+     * @fn          delScroll
      *
-     * brief
+     * @brief
      *
      */
-    delScroll() {
+    delScroll(){
 
         const scroll = this.scrollFormCtrl.value;
-
-        let selIdx = this.scrolls.findIndex((item)=>{
-            if(item === scroll) {
-                return true;
-            }
-            return false;
-        });
-        if(selIdx > -1) {
+        let selIdx = this.scrolls.findIndex(item => item === scroll);
+        if(selIdx > -1){
             this.scrolls.splice(selIdx, 1);
             selIdx--;
-            if(selIdx === -1) {
-                if(this.scrolls.length) {
+            if(selIdx == -1){
+                if(this.scrolls.length){
                     selIdx = 0;
                 }
             }
-            if(selIdx > -1) {
-                this.scrollFormCtrl.setValue(this.scrolls[selIdx]);
-                this.yPosSet(this.scrolls[selIdx].yPos);
+            if(selIdx > -1){
+                const scroll = this.scrolls[selIdx];
+                this.scrollFormCtrl.setValue(scroll);
             }
             else {
                 this.scrollFormCtrl.reset();
@@ -255,12 +336,13 @@ export class EditScrolls implements OnInit, AfterViewInit {
         }
     }
     /***********************************************************************************************
-     * fn          selChanged
+     * @fn          selChanged
      *
-     * brief
+     * @brief
      *
      */
-    selChanged(event) {
+    selChanged(event){
+        console.log(event);
         this.yPosSet(event.value.yPos);
     }
 
@@ -269,7 +351,7 @@ export class EditScrolls implements OnInit, AfterViewInit {
      *
      * @brief
      *
-     */
+     *
     isInvalid(){
 
         if(this.nameFormCtrl.invalid){
@@ -278,9 +360,11 @@ export class EditScrolls implements OnInit, AfterViewInit {
         if(this.yPosFormCtrl.invalid){
             return true;
         }
-        if(this.durationFormCtrl.invalid){
+        if(this.speedFormCtrl.invalid){
             return true;
         }
         return false;
     }
+    */
+
 }

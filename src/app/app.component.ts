@@ -45,12 +45,12 @@ export class AppComponent implements OnInit, AfterViewInit {
         {
             name: 'floor-1',
             yPos: 10,
-            duration: 200,
+            speed: 200,
         },
         {
             name: 'floor-2',
             yPos: 40,
-            duration: 800,
+            speed: 800,
         },
     ];
 
@@ -173,7 +173,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const x = 0;
         const y = (this.scrolls[idx].yPos * this.imgDim.height) / 100;
-        const speed = this.scrolls[idx].duration;
+        const speed = this.scrolls[idx].speed;
 
         this.scrollRef.directiveRef.scrollTo(x, y, speed);
     }
