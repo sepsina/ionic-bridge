@@ -304,6 +304,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.autoFocus = false;
             dialogConfig.disableClose = true;
             dialogConfig.panelClass = 'set-styles-container';
+            dialogConfig.restoreFocus = false;
 
             const dlgRef = this.matDialog.open(SetStyles, dialogConfig);
             dlgRef.afterOpened().subscribe(()=>{
@@ -334,6 +335,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.autoFocus = false;
             dialogConfig.disableClose = true;
             dialogConfig.panelClass = 'edit-scrolls-container';
+            dialogConfig.restoreFocus = false;
 
             const dlgRef = this.matDialog.open(EditScrolls, dialogConfig);
 
@@ -366,6 +368,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.autoFocus = false;
             dialogConfig.disableClose = true;
             dialogConfig.panelClass = 'set-dns-container';
+            dialogConfig.restoreFocus = false;
 
             const dlgRef = this.matDialog.open(EditFreeDNS, dialogConfig);
             dlgRef.afterOpened().subscribe(()=>{
@@ -394,6 +397,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             dialogConfig.autoFocus = false;
             dialogConfig.disableClose = true;
             dialogConfig.panelClass = 'edit-binds-container';
+            dialogConfig.restoreFocus = false;
 
             const dlgRef = this.matDialog.open(EditBinds, dialogConfig);
 
