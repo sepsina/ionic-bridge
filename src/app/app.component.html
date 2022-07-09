@@ -10,57 +10,55 @@
         </div>
         <button id="edit-scrolls-button"
                 mat-button onclick="this.blur()"
-                (click)="onEditScrollsClick(scrollRef)">
+                (click)="onEditScrollsClick()">
             <mat-icon>edit</mat-icon>
             edit
         </button>
     </div>
 
-    <perfect-scrollbar id="scroll-frame" #scrollRef>
-        <div class="container" #containerRef id="containerID">
-            <div *ngFor="let attr of storage.attrMap | keyvalue"
+    <div id="floor-plan" #floorPlanRef>
+        <div #containerRef id="containerID">
+            <div *ngFor="let attr of storage.attrMap | keyvalue;"
                  class="attr"
-                 [bounds]="containerRef"
-                 [inBounds]="true"
-                 (endOffset)="attr.value.drag = false; onDragEnded($event, attr)"
-                 (started)="attr.value.drag = true"
-                 [trackPosition]="true"
-                 [position]="getAttrPosition(attr)"
-                 [gridSize]="5"
-                 zIndex="1000"
-                 zIndexMoving="99999"
-                 [preventDefaultEvent]="true"
-                 [handle]="dragHandle"
-                 ngDraggable
-                 (mouseenter)="attr.value.isSel = true"
-                 (mouseleave)="attr.value.isSel = false"
-                 (mousedown)="attr.value.isSel = false" >
-                <div #dragHandle
+                 cdkDrag
+                 [cdkDragBoundary]="containerRef"
+                 (cdkDragEnded)="attr.value.drag=false; onDragEnded($event, attr)"
+                 (cdkDragStarted)="attr.value.drag=true; onDragStarted($event)"
+                 [cdkDragFreeDragPosition]="getAttrPosition(attr)"
+                 (mouseenter)="attr.value.isSel=true"
+                 (mouseleave)="attr.value.isSel=false"
+                 (mousedown)="attr.value.isSel=false">
+                <div cdkDragHandle
                      class="attr-val centered"
-                     [ngStyle]="getAttrStyle(attr)"
                      highlightSel
+                     [ngStyle]="getAttrStyle(attr)"
                      matTooltip
-                     #attrToolTip="matTooltip"
+                     [matTooltipDisabled]="dragFlag"
+                     #attrToolTip='matTooltip'
                      (mouseenter)="showTooltip(attrToolTip, attr.value)"
                      (mouseleave)="attrToolTip.hide()"
-                     (mousedown)="attrToolTip.hide()" >
-                    {{ attr.value.formatedVal }}
+                     (mousedown)="attrToolTip.hide()">
+                    {{attr.value.formatedVal}}
                 </div>
-                <div class="attr-edit centered"
-                     *ngIf="attr.value.isSel && !attr.value.drag"
-                     (mousedown)="setStyles(attr)" >
+                <div *ngIf="attr.value.isSel && !dragFlag"
+                        class="attr-edit centered"
+                        (mousedown)="setStyles(attr)">
                     <mat-icon>settings</mat-icon>
                 </div>
             </div>
         </div>
-    </perfect-scrollbar>
+    </div>
 
     <div class="footer">
-        <button id="edit-dns-button" mat-button onclick="this.blur()" (click)="setDNS()">
+        <button id="edit-dns-button"
+                mat-button onclick="this.blur()"
+                (click)="setDNS()">
             <mat-icon>edit</mat-icon>
             free DNS
         </button>
-        <button id="edit-binds-button" mat-button onclick="this.blur()" (click)="editBinds()">
+        <button id="edit-binds-button"
+                mat-button onclick="this.blur()"
+                (click)="editBinds()">
             <mat-icon>edit</mat-icon>
             binds
         </button>

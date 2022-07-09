@@ -18,9 +18,47 @@
     padding: 5px;
 }
 
-.container {
+#scroll-buttons-frame {
+    display: flex;
+    flex-direction: row;
+    justify-items: flex-end;
+    align-items: center;
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    gap: 10px;
+    padding: 5px;
+    flex: 1 1 100%;
+}
+
+#scroll-label {
+    display: flex;
+    flex-direction: row;
+    justify-items: flex-start;
+    align-items: center;
+    text-align: right;
+    flex: 1 1 100%;
+}
+
+#edit-scrolls-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid lightgray;
+}
+
+#floor-plan {
+    flex: 1 1 100%;
+    border: 2px solid rgb(3, 111, 253);
+    border-radius: 6px;
+    margin: 0px;
     position: relative;
-    border: solid 3px red;
+    overflow: auto;
+}
+
+#containerID {
+    position: relative;
+    border: solid 2px red;
 }
 
 .attr {
@@ -76,51 +114,6 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-}
-
-#scroll-frame {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-
-    flex: 1 1 100%;
-    border: 1px solid lightgray;
-    border-radius: 6px;
-    margin: 0px;
-    position: relative;
-    overflow: auto;
-}
-
-#scroll-label {
-    display: flex;
-    flex-direction: row;
-    justify-items: flex-start;
-    align-items: center;
-    //border: 1px solid red;
-    text-align: right;
-    flex: 1 1 100%;
-}
-
-#scroll-buttons-frame {
-    display: flex;
-    flex-direction: row;
-    justify-items: flex-end;
-    align-items: center;
-    border: 1px solid lightgray;
-    border-radius: 6px;
-    gap: 10px;
-    padding: 5px;
-    flex: 1 1 100%;
-}
-
-#edit-scrolls-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    //align-self: stretch;
-    border: 1px solid lightgray;
 }
 
 #edit-dns-button {

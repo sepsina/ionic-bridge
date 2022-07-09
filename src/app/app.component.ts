@@ -9,7 +9,6 @@ import { UtilsService} from './services/utils.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { File } from '@ionic-native/file/ngx';
 import { MatTooltip } from '@angular/material/tooltip';
-import { NgScrollbar } from 'ngx-scrollbar';
 import { Platform } from '@ionic/angular';
 
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
@@ -23,8 +22,8 @@ import { EditBinds } from './binds/binds.page';
 import * as gConst from './gConst';
 import * as gIF from './gIF';
 
-import { PerfectScrollbarComponent } from 'ngx-perfect-scrollbar';
 import { LoadingController } from '@ionic/angular';
+import { CdkDragEnd, CdkDragStart } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-root',
@@ -34,7 +33,7 @@ import { LoadingController } from '@ionic/angular';
 export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild('containerRef') containerRef: ElementRef;
-    @ViewChild('scrollRef') scrollRef?: PerfectScrollbarComponent;
+    @ViewChild('floorPlanRef') floorPlanRef: ElementRef;
 
     bkgImgWidth: number;
     bkgImgHeight: number;
@@ -44,13 +43,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     scrolls: gIF.scroll_t[] = [
         {
             name: 'floor-1',
-            yPos: 10,
-            speed: 200,
+            yPos: 10
         },
         {
             name: 'floor-2',
-            yPos: 40,
-            speed: 800,
+            yPos: 40
         },
     ];
 
@@ -61,6 +58,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     //attrIdx: number = -1;
     //selAttr = {} as gIF.hostedAttr_t;
     loading: any;
+
+    dragFlag = false;
 
     constructor(
         private events: EventsService,
@@ -173,9 +172,12 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const x = 0;
         const y = (this.scrolls[idx].yPos * this.imgDim.height) / 100;
-        const speed = this.scrolls[idx].speed;
 
-        this.scrollRef.directiveRef.scrollTo(x, y, speed);
+        this.floorPlanRef.nativeElement.scrollTo({
+            top: y,
+            left: x,
+            behavior: 'smooth'
+        });
     }
 
     /***********************************************************************************************
@@ -221,7 +223,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         const bkgImg = new Image();
         bkgImg.src = imgSrc;
         bkgImg.onload = () => {
-            //let el = document.getElementById('containerID');
             this.bkgImgWidth = bkgImg.width;
             this.bkgImgHeight = bkgImg.height;
             const el = this.containerRef.nativeElement;
@@ -244,6 +245,9 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     getAttrPosition(attr: any) {
 
+        if(attr.value.drag){
+            return undefined;
+        }
         const attrPos = attr.value.pos;
 
         return {
@@ -258,15 +262,31 @@ export class AppComponent implements OnInit, AfterViewInit {
      * brief
      *
      */
-    async onDragEnded(event: any, keyVal: any) {
+     async onDragEnded(event: CdkDragEnd, keyVal: any) {
+
+        this.dragFlag = false;
+        event.source.element.nativeElement.style.zIndex = '1';
+
+        const evtPos = event.source.getFreeDragPosition();
 
         const pos: gIF.nsPos_t = {
-            x: event.x / this.imgDim.width,
-            y: event.y / this.imgDim.height,
+            x: evtPos.x / this.imgDim.width,
+            y: evtPos.y / this.imgDim.height,
         };
         keyVal.value.pos = pos;
 
         await this.storage.setAttrPos(pos, keyVal);
+    }
+
+    /***********************************************************************************************
+     * @fn          onDragStarted
+     *
+     * @brief
+     *
+     */
+     async onDragStarted(event: CdkDragStart) {
+        this.dragFlag = true;
+        event.source.element.nativeElement.style.zIndex = '10000';
     }
 
     /***********************************************************************************************
@@ -300,12 +320,12 @@ export class AppComponent implements OnInit, AfterViewInit {
      * brief
      *
      */
-    async onEditScrollsClick(scrollRef) {
+    async onEditScrollsClick() {
 
         setTimeout(()=>{
             const dlgData = {
                 scrolls: JSON.parse(JSON.stringify(this.scrolls)),
-                scrollRef: scrollRef.directiveRef,
+                scrollRef: this.floorPlanRef.nativeElement,
                 imgDim: this.imgDim,
             };
             const dialogConfig = new MatDialogConfig();
