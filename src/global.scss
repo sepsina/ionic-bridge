@@ -39,7 +39,7 @@
 }
 
 .attr-tooltip {
-    font-family: 'appFont';
+    //font-family: 'appFont';
     white-space: pre;
     font-size: 15px;
     color: black !important;
@@ -48,7 +48,7 @@
 }
 
 .bind-tooltip {
-    font-family: 'appFont';
+    //font-family: 'appFont';
     white-space: pre;
     font-size: 15px;
     color: black !important;
@@ -70,4 +70,50 @@
 
 .edit-binds-container .mat-dialog-container {
     padding: 0;
+    resize: horizontal;
+    min-width: 350px;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, .25);
+}
+
+::-webkit-scrollbar-track {
+    background-color: #fff;
+}
+
+.mat-select-trigger {
+    min-width: 100px;
+}
+.mat-select-value {
+    text-align: right;
+}
+
+.centered {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.left-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.right-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
 }

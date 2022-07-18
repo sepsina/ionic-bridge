@@ -11,6 +11,7 @@ import { EditScrolls } from './edit-scrolls/edit-scrolls';
 import { EditFreeDNS } from './edit-freeDNS/edit-freeDNS';
 import { EditBinds } from './binds/binds.page';
 import { HighlightSel } from './directives/highlight-sel.directive';
+import { ResizeObserverDirective } from './directives/resize-observer.directive';
 
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -30,7 +31,8 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
         EditScrolls,
         EditFreeDNS,
         EditBinds,
-        HighlightSel
+        HighlightSel,
+        ResizeObserverDirective
     ],
     entryComponents: [],
     imports: [
